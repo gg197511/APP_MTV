@@ -260,16 +260,24 @@
         <button class="btn-volver" onclick="volverAlMenu()">← Volver al Menú</button>
         <form id="formAltaSocio">
           <div class="form-group">
-            <label for="nombreSocio">Nombre Completo:</label>
-            <input type="text" id="nombreSocio" required placeholder="Ej. Ana García">
+            <label for="aliasSocio">Alias / Nombre corto (*):</label>
+            <input type="text" id="aliasSocio" required placeholder="Ej. AniMontaña (Como quieres que te llamemos)">
           </div>
           <div class="form-group">
-            <label for="emailSocio">Correo Electrónico:</label>
+            <label for="nombreSocio">Nombre Completo (*):</label>
+            <input type="text" id="nombreSocio" required placeholder="Ej. Ana García Pérez">
+          </div>
+          <div class="form-group">
+            <label for="emailSocio">Correo Electrónico (*):</label>
             <input type="email" id="emailSocio" required placeholder="ejemplo@correo.com">
           </div>
           <div class="form-group">
-            <label for="telSocio">Teléfono de Contacto:</label>
+            <label for="telSocio">Teléfono de Contacto (*):</label>
             <input type="tel" id="telSocio" required placeholder="600000000">
+          </div>
+          <div class="form-group">
+            <label for="comentariosSocio">Comentarios / Observaciones:</label>
+            <textarea id="comentariosSocio" rows="3" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem;" placeholder="¿Dudas, experiencia en montaña, si estás federado/a...?"></textarea>
           </div>
           <button type="submit" class="btn-submit" id="btnAlta">Enviar Solicitud de Alta</button>
         </form>

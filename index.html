@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Club de Montaña MTV</title>
+  <title>Club de Trail MTV</title>
   
   <meta name="theme-color" content="#2e7d32">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -244,6 +244,17 @@
         </div>
       </div>
 
+      <!-- SECCIÓN 1.1: DETALLE DE NOTICIA COMPLETA (NUEVA) -->
+      <div id="pantallaDetalleNoticia" style="display: none;">
+        <button class="btn-volver" onclick="volverANoticias()">← Volver a Noticias</button>
+        <div class="noticia-detalle-card" style="background:#f9f9f9; padding:20px; border-radius:12px; border-left:5px solid var(--primary-color);">
+          <h2 id="noticiaDetalleTitulo" style="font-size:1.3rem; margin-bottom:8px; color:var(--dark-color);"></h2>
+          <span id="noticiaDetalleFecha" style="font-size:0.8rem; color:#888; display:block; margin-bottom:15px;"></span>
+          <div id="noticiaDetalleContenido" style="font-size:0.95rem; line-height:1.6; color:#333; margin-bottom:20px; white-space:pre-line;"></div>
+          <div id="noticiaDetalleLinkContainer"></div>
+        </div>
+      </div>
+
       <!-- SECCIÓN 2: HAZTE SOCIO -->
       <div id="pantallaSocio" style="display: none;">
         <button class="btn-volver" onclick="volverAlMenu()">← Volver al Menú</button>
@@ -323,6 +334,9 @@
       document.getElementById('pantallaMenuGrid').style.display = 'grid';
     }
 
+   
+let noticiasGuardadas = []; // Almacena temporalmente las noticias cargadas
+
     async function cargarNoticias() {
       const contenedor = document.getElementById('contenedorNoticias');
       try {
@@ -330,14 +344,20 @@
         const data = await res.json();
 
         if (data.status === 'success' && data.noticias && data.noticias.length > 0) {
+          noticiasGuardadas = data.noticias; // Guardamos en memoria local
           contenedor.innerHTML = '';
-          data.noticias.forEach(n => {
+          
+          data.noticias.forEach((n, idx) => {
             const card = document.createElement('div');
             card.className = 'noticia-card';
+            card.style.cursor = 'pointer'; // Indica que es pulsable
+            card.onclick = () => verDetalleNoticia(idx);
+            
             card.innerHTML = `
               <h3>${n.titulo}</h3>
               <span class="noticia-fecha">📅 ${n.fecha}</span>
-              <p>${n.resumen || n.contenido}</p>
+              <p>${n.resumen || n.contenido.substring(0, 100) + "..."}</p>
+              <span style="font-size:0.8rem; color:var(--primary-color); font-weight:bold; display:block; margin-top:8px;">Leer más ➔</span>
             `;
             contenedor.appendChild(card);
           });
@@ -347,6 +367,35 @@
       } catch (err) {
         contenedor.innerHTML = '<p style="text-align:center; color:red;">Error al cargar las noticias.</p>';
       }
+    }
+
+    // ABRIR VISTA DE DETALLE DE NOTICIA
+    function verDetalleNoticia(index) {
+      const noticia = noticiasGuardadas[index];
+      if (!noticia) return;
+
+      document.getElementById('noticiaDetalleTitulo').innerText = noticia.titulo;
+      document.getElementById('noticiaDetalleFecha').innerText = "📅 " + noticia.fecha;
+      document.getElementById('noticiaDetalleContenido').innerText = noticia.contenido || noticia.resumen;
+
+      const linkContainer = document.getElementById('noticiaDetalleLinkContainer');
+      if (noticia.url && noticia.url.trim() !== "") {
+        linkContainer.innerHTML = `
+          <a href="${noticia.url}" target="_blank" class="btn-submit" style="display:inline-block; text-align:center; text-decoration:none; background:var(--primary-color); color:white; padding:10px 16px; border-radius:8px; font-weight:bold;">
+            🔗 Abrir Enlace Relacionado
+          </a>`;
+      } else {
+        linkContainer.innerHTML = '';
+      }
+
+      document.getElementById('pantallaNoticias').style.display = 'none';
+      document.getElementById('pantallaDetalleNoticia').style.display = 'block';
+    }
+
+    // VOLVER AL LISTADO DE NOTICIAS
+    function volverANoticias() {
+      document.getElementById('pantallaDetalleNoticia').style.display = 'none';
+      document.getElementById('pantallaNoticias').style.display = 'block';
     }
 
     document.getElementById('formAltaSocio').addEventListener('submit', async (e) => {

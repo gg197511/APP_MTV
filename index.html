@@ -1,6 +1,3 @@
- // ⚠️ REEMPLAZA ESTA URL CON TU NUEVA URL DE APPS SCRIPT
- //   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxqUcLjuCT8yYX24mpERPYl3ApG9vbDru4kXjvA2QB6K5KwmqpUtT9vx-objE7zT9sCaQ/exec";
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -49,12 +46,12 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
 
-    /* BANNER DE CABECERA */
+    /* BANNER DE CABECERA CON TU IMAGEN PERSONALIZADA */
     .hero-banner {
       position: relative;
       width: 100%;
       height: 180px;
-      background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80') center/cover no-repeat;
+      background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('Cabecera.jpg') center/cover no-repeat;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
@@ -186,7 +183,7 @@
 <body>
 
   <div class="main-container">
-    <!-- BANNER DE CABECERA -->
+    <!-- BANNER DE CABECERA (Cabecera.jpg) -->
     <div class="hero-banner">
       <h1 id="tituloCabecera">Club de Montaña MTV</h1>
       <p id="subtituloCabecera">Pasión por la naturaleza y la aventura</p>
@@ -197,9 +194,9 @@
       <!-- PANTALLA PRINCIPAL: GRID DE 4 BOTONES GRANDES -->
       <div id="pantallaMenuGrid" class="menu-grid">
         
-        <!-- Botón 1: Noticias -->
+        <!-- Botón 1: Noticias (News.jpg) -->
         <button class="grid-btn" onclick="abrirSeccion('noticias')">
-          <div class="grid-btn-bg" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=500&q=80');"></div>
+          <div class="grid-btn-bg" style="background-image: url('News.jpg');"></div>
           <div class="grid-btn-overlay"></div>
           <div class="grid-btn-text">
             <span>📰</span>
@@ -207,9 +204,9 @@
           </div>
         </button>
 
-        <!-- Botón 2: Hazte Socio -->
+        <!-- Botón 2: Hazte Socio (Socios.jpg) -->
         <button class="grid-btn" onclick="abrirSeccion('socio')">
-          <div class="grid-btn-bg" style="background-image: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=500&q=80');"></div>
+          <div class="grid-btn-bg" style="background-image: url('Socios.jpg');"></div>
           <div class="grid-btn-overlay"></div>
           <div class="grid-btn-text">
             <span>📝</span>
@@ -217,9 +214,9 @@
           </div>
         </button>
 
-        <!-- Botón 3: Challenge -->
+        <!-- Botón 3: Challenge (Challenge.jpg) -->
         <button class="grid-btn" onclick="abrirSeccion('challenge')">
-          <div class="grid-btn-bg" style="background-image: url('https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?auto=format&fit=crop&w=500&q=80');"></div>
+          <div class="grid-btn-bg" style="background-image: url('Challenge.jpg');"></div>
           <div class="grid-btn-overlay"></div>
           <div class="grid-btn-text">
             <span>🏆</span>
@@ -227,9 +224,9 @@
           </div>
         </button>
 
-        <!-- Botón 4: Historia / El Club -->
+        <!-- Botón 4: Historia / El Club (Historia.jpg) -->
         <button class="grid-btn" onclick="abrirSeccion('historia')">
-          <div class="grid-btn-bg" style="background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=500&q=80');"></div>
+          <div class="grid-btn-bg" style="background-image: url('Historia.jpg');"></div>
           <div class="grid-btn-overlay"></div>
           <div class="grid-btn-text">
             <span>🌲</span>
@@ -239,7 +236,7 @@
 
       </div>
 
-      <!-- SECCIÓN 1: NOTICIAS (Oculta por defecto) -->
+      <!-- SECCIÓN 1: NOTICIAS -->
       <div id="pantallaNoticias" style="display: none;">
         <button class="btn-volver" onclick="volverAlMenu()">← Volver al Menú</button>
         <div id="contenedorNoticias">
@@ -247,7 +244,7 @@
         </div>
       </div>
 
-      <!-- SECCIÓN 2: HAZTE SOCIO (Oculta por defecto) -->
+      <!-- SECCIÓN 2: HAZTE SOCIO -->
       <div id="pantallaSocio" style="display: none;">
         <button class="btn-volver" onclick="volverAlMenu()">← Volver al Menú</button>
         <form id="formAltaSocio">
@@ -268,7 +265,7 @@
         <div id="statusSocioMessage" style="margin-top:15px; text-align:center; display:none; padding:10px; border-radius:8px;"></div>
       </div>
 
-      <!-- SECCIÓN 3: CHALLENGE (Oculta por defecto) -->
+      <!-- SECCIÓN 3: CHALLENGE -->
       <div id="pantallaChallenge" style="display: none;">
         <button class="btn-volver" onclick="volverAlMenu()">← Volver al Menú</button>
         <div class="banner-challenge">
@@ -280,7 +277,7 @@
         </div>
       </div>
 
-      <!-- SECCIÓN 4: NUESTRA HISTORIA (Oculta por defecto) -->
+      <!-- SECCIÓN 4: NUESTRA HISTORIA -->
       <div id="pantallaHistoria" style="display: none;">
         <button class="btn-volver" onclick="volverAlMenu()">← Volver al Menú</button>
         <div style="line-height: 1.6; font-size: 0.95rem; color: #333;">
@@ -295,10 +292,9 @@
   </div>
 
   <script>
-    // ⚠️ COLOCA AQUÍ LA URL DE TU APPS SCRIPT (DE LA APP DEL CLUB)
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxqUcLjuCT8yYX24mpERPYl3ApG9vbDru4kXjvA2QB6K5KwmqpUtT9vx-objE7zT9sCaQ/exec";
-  
-  function abrirSeccion(seccion) {
+
+    function abrirSeccion(seccion) {
       document.getElementById('pantallaMenuGrid').style.display = 'none';
 
       document.getElementById('pantallaNoticias').style.display = 'none';

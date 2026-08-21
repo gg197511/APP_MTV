@@ -296,14 +296,15 @@
         </div>
       </div>
 
-      <!-- SECCIÓN 4: NUESTRA HISTORIA -->
+      <!-- SECCIÓN 4: NUESTRA HISTORIA (DINÁMICA) -->
       <div id="pantallaHistoria" style="display: none;">
         <button class="btn-volver" onclick="volverAlMenu()">← Volver al Menú</button>
-        <div style="line-height: 1.6; font-size: 0.95rem; color: #333;">
-          <h3 style="margin-bottom: 8px; color: var(--primary-color);">Nuestra Historia</h3>
-          <p style="margin-bottom: 12px;">Fundado con la pasión de compartir rutas y senderos, el Club de Montaña MTV fomenta el respeto por el medio ambiente y la aventura en equipo.</p>
-          <p>📍 <strong>Sede:</strong> Sede Social del Club</p>
-          <p>📧 <strong>Contacto:</strong> contacto@clubmtv.com</p>
+        <div style="background:#f9f9f9; padding:15px; border-radius:12px; border-left:5px solid var(--primary-color);">
+          <img src="Historia.jpg" alt="Historia Club MTV" style="width:100%; height:160px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+          <h3 id="historiaTitulo" style="margin-bottom: 8px; color: var(--primary-color);">Cargando...</h3>
+          <p id="historiaTexto" style="margin-bottom: 15px; line-height: 1.6; font-size: 0.95rem; color: #333; white-space: pre-line;"></p>
+          <div id="historiaContacto" style="font-size: 0.85rem; color: #555; background: #eee; padding: 10px; border-radius: 6px;"></div>
+          <p>📍 <strong>Sede:</strong> Sede Social del Club...aún no tenemos</p>
         </div>
       </div>
 
@@ -330,6 +331,7 @@
         document.getElementById('pantallaChallenge').style.display = 'block';
       } else if (seccion === 'historia') {
         document.getElementById('pantallaHistoria').style.display = 'block';
+	cargarHistoria();
       }
     }
 
@@ -458,6 +460,27 @@ let noticiasGuardadas = []; // Almacena temporalmente las noticias cargadas
         btn.innerText = "Enviar Solicitud de Alta";
       }
     });
+
+    async function cargarHistoria() {
+      const titulo = document.getElementById('historiaTitulo');
+      const texto = document.getElementById('historiaTexto');
+      const contacto = document.getElementById('historiaContacto');
+
+      try {
+        const res = await fetch(`${APPS_SCRIPT_URL}?tipo=historia`);
+        const data = await res.json();
+
+        if (data.status === 'success' && data.historia) {
+          titulo.innerText = data.historia.titulo;
+          texto.innerText = data.historia.texto;
+          contacto.innerHTML = data.historia.contacto ? `📍 <strong>Contacto & Sede:</strong><br>${data.historia.contacto}` : '';
+        }
+      } catch (err) {
+        titulo.innerText = "Nuestra Historia";
+        texto.innerText = "Error al cargar la información desde la base de datos.";
+      }
+    }
+
   </script>
 </body>
 </html>

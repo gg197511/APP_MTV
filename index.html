@@ -406,18 +406,21 @@ let noticiasGuardadas = []; // Almacena temporalmente las noticias cargadas
       document.getElementById('pantallaNoticias').style.display = 'block';
     }
 
+// MANEJADOR DE ENVÍO DE SOLICITUD DE SOCIO CON CONFIRMACIÓN
     document.getElementById('formAltaSocio').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('btnAlta');
       const status = document.getElementById('statusSocioMessage');
 
       btn.disabled = true;
-      btn.innerText = "Enviando...";
+      btn.innerText = "Procesando alta...";
 
       const datos = new URLSearchParams();
+      datos.append('alias', document.getElementById('aliasSocio').value);
       datos.append('nuevoSocio', document.getElementById('nombreSocio').value);
       datos.append('email', document.getElementById('emailSocio').value);
       datos.append('telefono', document.getElementById('telSocio').value);
+      datos.append('comentarios', document.getElementById('comentariosSocio').value);
 
       try {
         await fetch(APPS_SCRIPT_URL, {
@@ -427,17 +430,29 @@ let noticiasGuardadas = []; // Almacena temporalmente las noticias cargadas
           body: datos.toString()
         });
 
+        // 1. Mostrar mensaje de confirmación destacado
         status.style.display = 'block';
-        status.style.background = '#e8f5e9';
-        status.style.color = '#2e7d32';
-        status.innerText = "¡Solicitud enviada con éxito!";
+        status.style.background = '#2e7d32'; // Verde de éxito
+        status.style.color = '#ffffff';
+        status.style.fontWeight = 'bold';
+        status.style.fontSize = '1.05rem';
+        status.style.boxShadow = '0 4px 10px rgba(0,0,0,0.2)';
+        status.innerText = "¡ALTA DE NUEVO SOCIO CORRECTA! ✅\nBienvenido/a al Club de Montaña MTV.";
+        
+        // 2. Limpiar el formulario
         document.getElementById('formAltaSocio').reset();
+
+        // 3. Volver al menú principal automáticamente tras 3 segundos
+        setTimeout(() => {
+          status.style.display = 'none';
+          volverAlMenu();
+        }, 3000);
 
       } catch (err) {
         status.style.display = 'block';
         status.style.background = '#ffebee';
         status.style.color = '#c62828';
-        status.innerText = "Error: " + err.message;
+        status.innerText = "❌ Error al procesar el alta: " + err.message;
       } finally {
         btn.disabled = false;
         btn.innerText = "Enviar Solicitud de Alta";

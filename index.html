@@ -10,6 +10,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Club MTV">
 
+  <link rel="manifest" href="manifest.json">
+
   <style>
     :root {
       --primary-color: #2e7d32;       /* Verde Montaña */
@@ -313,6 +315,7 @@
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxqUcLjuCT8yYX24mpERPYl3ApG9vbDru4kXjvA2QB6K5KwmqpUtT9vx-objE7zT9sCaQ/exec";
 
+
     function abrirSeccion(seccion) {
       document.getElementById('pantallaMenuGrid').style.display = 'none';
 
@@ -478,6 +481,11 @@ let noticiasGuardadas = []; // Almacena temporalmente las noticias cargadas
         titulo.innerText = "Nuestra Historia";
         texto.innerText = "Error al cargar la información desde la base de datos.";
       }
+    }
+
+
+    if ('serviceWorker' in navigator) {
+       navigator.serviceWorker.register('sw.js');
     }
 
   </script>

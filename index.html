@@ -2,15 +2,15 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
   <title>Club de Trail MTV</title>
-  
   <meta name="theme-color" content="#2e7d32">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Club MTV">
 
-  <link rel="manifest" href="manifest.json">
 
   <style>
     :root {
@@ -484,9 +484,13 @@ let noticiasGuardadas = []; // Almacena temporalmente las noticias cargadas
     }
 
 
-    if ('serviceWorker' in navigator) {
-       navigator.serviceWorker.register('sw.js');
-    }
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('Service Worker registrado con éxito', reg))
+      .catch(err => console.log('Error al registrar Service Worker', err));
+  });
+}
 
   </script>
 </body>

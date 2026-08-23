@@ -410,17 +410,18 @@ let noticiasGuardadas = []; // Almacena temporalmente las noticias cargadas
       document.getElementById('pantallaNoticias').style.display = 'block';
     }
 
-// MANEJADOR DE ENVÍO DE SOCIO CON VALIDACIÓN DE ALIAS DUPLICADO
+// MANEJADOR DE ENVÍO DE SOCIO CON AVISO CLARO DE ALIAS DUPLICADO
     document.getElementById('formAltaSocio').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('btnAlta');
       const status = document.getElementById('statusSocioMessage');
+      const aliasInput = document.getElementById('aliasSocio');
 
       btn.disabled = true;
       btn.innerText = "Comprobando datos...";
 
       const datos = new URLSearchParams();
-      datos.append('alias', document.getElementById('aliasSocio').value);
+      datos.append('alias', aliasInput.value.trim());
       datos.append('nuevoSocio', document.getElementById('nombreSocio').value);
       datos.append('email', document.getElementById('emailSocio').value);
       datos.append('telefono', document.getElementById('telSocio').value);
@@ -435,34 +436,45 @@ let noticiasGuardadas = []; // Almacena temporalmente las noticias cargadas
 
         const resultado = await response.json();
 
-        // CASO 1: El Alias ya está ocupado
+        // ❌ CASO A: EL ALIAS YA EXISTE
         if (resultado.status === 'error_alias') {
           status.style.display = 'block';
-          status.style.background = '#ffebee'; // Fondo rojo claro
-          status.style.color = '#c62828';      // Texto rojo oscuro
+          status.style.background = '#d32f2f'; // Rojo alerta visible
+          status.style.color = '#ffffff';
           status.style.fontWeight = 'bold';
-          status.style.fontSize = '0.95rem';
-          status.innerText = "⚠️ " + resultado.message;
+          status.style.padding = '12px';
+          status.style.borderRadius = '8px';
+          status.style.marginTop = '15px';
+          status.style.boxShadow = '0 4px 10px rgba(211,47,47,0.3)';
+          status.innerText = "⚠️ ATENCIÓN: El Alias '" + aliasInput.value + "' ya está registrado por otro socio.\nPor favor, elige un Alias diferente.";
+
+          aliasInput.style.border = '2px solid #d32f2f';
+          aliasInput.style.background = '#ffebee';
+          aliasInput.focus();
           
-          // Enfocamos el campo Alias para que lo corrija fácilmente
-          document.getElementById('aliasSocio').focus();
-          document.getElementById('aliasSocio').style.border = '2px solid #c62828';
+          btn.disabled = false;
+          btn.innerText = "Enviar Solicitud de Alta";
           return;
         }
 
-        // CASO 2: Registro Exitoso
+        // ✅ CASO B: REGISTRO CORRECTO
         if (resultado.status === 'success') {
-          document.getElementById('aliasSocio').style.border = '1px solid #ccc';
+          aliasInput.style.border = '1px solid #ccc';
+          aliasInput.style.background = '#ffffff';
+
           status.style.display = 'block';
-          status.style.background = '#2e7d32'; // Verde
+          status.style.background = '#2e7d32'; // Verde éxito
           status.style.color = '#ffffff';
           status.style.fontWeight = 'bold';
           status.style.fontSize = '1.05rem';
+          status.style.padding = '12px';
+          status.style.borderRadius = '8px';
+          status.style.marginTop = '15px';
           status.innerText = "¡ALTA DE NUEVO SOCIO CORRECTA! ✅\nBienvenido/a al Club de Montaña MTV.";
-          
-	//Limpiamos el formulario
-          document.getElementById('formAltaSocio').reset();
-	//Volver al menú principal a los 3 segundos
+
+       //Borramos el formulario
+	  document.getElementById('formAltaSocio').reset();
+       // a los 3 segundos volvemos al menú principal
           setTimeout(() => {
             status.style.display = 'none';
             volverAlMenu();
@@ -470,18 +482,17 @@ let noticiasGuardadas = []; // Almacena temporalmente las noticias cargadas
         }
 
       } catch (err) {
-        // En caso de que el navegador no pueda leer el JSON por políticas CORS, se muestra aviso amigable
+        // En caso de bloqueo CORS en segundo plano
         status.style.display = 'block';
-        status.style.background = '#e8f5e9';
-        status.style.color = '#2e7d32';
-        status.innerText = "¡Solicitud enviada correctamente! Nos pondremos en contacto contigo.";
+        status.style.background = '#2e7d32';
+        status.style.color = '#ffffff';
+        status.innerText = "¡ALTA ENVIADA CORRECTAMENTE! ✅";
         document.getElementById('formAltaSocio').reset();
       } finally {
         btn.disabled = false;
         btn.innerText = "Enviar Solicitud de Alta";
       }
     });
-
     async function cargarHistoria() {
       const titulo = document.getElementById('historiaTitulo');
       const texto = document.getElementById('historiaTexto');

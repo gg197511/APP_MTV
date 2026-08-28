@@ -46,7 +46,7 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
 
-    /* BANNER DE CABECERA CON TU IMAGEN PERSONALIZADA */
+    /* BANNER DE CABECERA CON IMAGEN */
     .hero-banner {
       position: relative;
       width: 100%;
@@ -165,7 +165,7 @@
 
     .form-group { margin-bottom: 15px; }
     label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 6px; }
-    input[type="text"], input[type="email"], input[type="tel"] {
+    input[type="text"], input[type="email"], input[type="tel"], select {
       width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem;
     }
 
@@ -325,6 +325,36 @@
         </div>
       </div>
 
+      <!-- SECCIÓN 5.1: DETALLE DE CARRERA E INSCRIPCIÓN -->
+      <div id="pantallaDetalleCarrera" style="display: none;">
+        <button class="btn-volver" onclick="volverACarreras()">← Volver a Carreras</button>
+        <div style="background:#f9f9f9; padding:18px; border-radius:12px; border-left:5px solid var(--primary-color);">
+          <h2 id="carreraDetalleTitulo" style="font-size:1.3rem; color:var(--dark-color); margin-bottom:6px;"></h2>
+          <span id="carreraDetalleFecha" style="font-size:0.85rem; color:#888; display:block; margin-bottom:12px; font-weight:bold;"></span>
+          <p id="carreraDetalleInfo" style="font-size:0.95rem; line-height:1.5; color:#333; margin-bottom:15px; white-space:pre-line;"></p>
+          
+          <div id="carreraLinksContainer" style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;"></div>
+
+          <!-- LISTA DE SOCIOS QUE VAN -->
+          <div style="background:#fff; padding:12px; border-radius:8px; border:1px solid #ddd; margin-bottom:15px;">
+            <h4 style="font-size:0.95rem; color:var(--primary-color); margin-bottom:8px;">👥 Socios del Club apuntados:</h4>
+            <ul id="listaSociosInscritos" style="list-style:none; padding-left:0; font-size:0.9rem; color:#444;"></ul>
+          </div>
+
+          <!-- FORMULARIO DE INSCRIPCIÓN EN LA APP -->
+          <div style="background:#e8f5e9; padding:12px; border-radius:8px; border:1px solid #c8e6c9;">
+            <label for="selectSocioCarrera" style="font-size:0.85rem; font-weight:bold; color:#2e7d32; margin-bottom:5px;">¿Vas a ir a esta carrera? ¡Apúntate!</label>
+            <select id="selectSocioCarrera" style="width:100%; padding:10px; border-radius:6px; border:1px solid #a5d6a7; margin-bottom:10px;">
+              <option value="">-- Cargar lista de socios --</option>
+            </select>
+            <button onclick="inscribirmeEnCarrera()" class="btn-submit" id="btnInscribirCarrera" style="padding:10px; font-size:0.9rem;">
+              ➕ Confirmar mi Asistencia
+            </button>
+            <div id="statusInscripcionCarrera" style="margin-top:10px; text-align:center; font-size:0.85rem; display:none; padding:8px; border-radius:6px;"></div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -339,6 +369,7 @@
       document.getElementById('pantallaChallenge').style.display = 'none';
       document.getElementById('pantallaHistoria').style.display = 'none';
       document.getElementById('pantallaCarreras').style.display = 'none';
+      document.getElementById('pantallaDetalleCarrera').style.display = 'none';
 
       if (seccion === 'noticias') {
         document.getElementById('pantallaNoticias').style.display = 'block';
@@ -362,11 +393,12 @@
       document.getElementById('pantallaChallenge').style.display = 'none';
       document.getElementById('pantallaHistoria').style.display = 'none';
       document.getElementById('pantallaCarreras').style.display = 'none';
+      document.getElementById('pantallaDetalleCarrera').style.display = 'none';
 
       document.getElementById('pantallaMenuGrid').style.display = 'grid';
     }
 
-    let noticiasGuardadas = []; // Almacena temporalmente las noticias cargadas
+    let noticiasGuardadas = [];
 
     async function cargarNoticias() {
       const contenedor = document.getElementById('contenedorNoticias');
@@ -400,7 +432,6 @@
       }
     }
 
-    // ABRIR VISTA DE DETALLE DE NOTICIA
     function verDetalleNoticia(index) {
       const noticia = noticiasGuardadas[index];
       if (!noticia) return;
@@ -423,13 +454,14 @@
       document.getElementById('pantallaDetalleNoticia').style.display = 'block';
     }
 
-    // VOLVER AL LISTADO DE NOTICIAS
     function volverANoticias() {
       document.getElementById('pantallaDetalleNoticia').style.display = 'none';
       document.getElementById('pantallaNoticias').style.display = 'block';
     }
 
-    // CARGAR LISTADO DE CARRERAS DE LA ZONA
+    let carrerasGuardadas = [];
+    let carreraSeleccionadaId = null;
+
     async function cargarCarreras() {
       const contenedor = document.getElementById('contenedorCarreras');
       try {
@@ -437,16 +469,18 @@
         const data = await res.json();
 
         if (data.status === 'success' && data.carreras && data.carreras.length > 0) {
+          carrerasGuardadas = data.carreras;
           contenedor.innerHTML = '';
-          data.carreras.forEach((c) => {
+          data.carreras.forEach((c, idx) => {
             const card = document.createElement('div');
             card.className = 'noticia-card';
             card.style.cursor = 'pointer';
+            card.onclick = () => verDetalleCarrera(idx);
             card.innerHTML = `
               <h3>🏃 ${c.nombre}</h3>
               <span class="noticia-fecha">📅 ${c.fecha}</span>
               <p>${c.info ? c.info.substring(0, 90) + "..." : "Sin información adicional."}</p>
-              <span style="font-size:0.8rem; color:var(--primary-color); font-weight:bold; display:block; margin-top:8px;">Ver detalles e inscripciones ➔</span>
+              <span style="font-size:0.8rem; color:var(--primary-color); font-weight:bold; display:block; margin-top:8px;">Ver detalles e inscritos ➔</span>
             `;
             contenedor.appendChild(card);
           });
@@ -458,7 +492,125 @@
       }
     }
 
-    // MANEJADOR DE ENVÍO DE SOCIO CON AVISO CLARO DE ALIAS DUPLICADO
+    async function verDetalleCarrera(index) {
+      const carrera = carrerasGuardadas[index];
+      if (!carrera) return;
+
+      carreraSeleccionadaId = carrera.id;
+
+      document.getElementById('carreraDetalleTitulo').innerText = carrera.nombre;
+      document.getElementById('carreraDetalleFecha').innerText = "📅 " + carrera.fecha;
+      document.getElementById('carreraDetalleInfo').innerText = carrera.info;
+
+      const linksDiv = document.getElementById('carreraLinksContainer');
+      linksDiv.innerHTML = '';
+      if (carrera.linkWeb) {
+        linksDiv.innerHTML += `<a href="${carrera.linkWeb}" target="_blank" class="btn-submit" style="flex:1; text-align:center; text-decoration:none; background:#555; padding:8px; font-size:0.8rem;">🌐 Web Oficial</a>`;
+      }
+      if (carrera.linkInscripcion) {
+        linksDiv.innerHTML += `<a href="${carrera.linkInscripcion}" target="_blank" class="btn-submit" style="flex:1; text-align:center; text-decoration:none; background:#d32f2f; padding:8px; font-size:0.8rem;">📝 Inscripción Oficial</a>`;
+      }
+
+      const ulInscritos = document.getElementById('listaSociosInscritos');
+      ulInscritos.innerHTML = '<li>⏳ Cargando lista de inscritos...</li>';
+
+      try {
+        const res = await fetch(`${APPS_SCRIPT_URL}?tipo=detalleCarrera&id=${encodeURIComponent(carrera.id)}`);
+        const data = await res.json();
+        if (data.status === 'success' && data.inscritos) {
+          if (data.inscritos.length > 0) {
+            ulInscritos.innerHTML = data.inscritos.map(alias => `<li style="padding:4px 0; border-bottom:1px solid #eee;">🏃‍♂️ <strong>${alias}</strong></li>`).join('');
+          } else {
+            ulInscritos.innerHTML = '<li style="color:#888;">Nadie se ha apuntado aún. ¡Sé el primero!</li>';
+          }
+        }
+      } catch (err) {
+        ulInscritos.innerHTML = '<li style="color:red;">Error al cargar la lista.</li>';
+      }
+
+      poblarSelectorSociosCarrera();
+
+      document.getElementById('pantallaCarreras').style.display = 'none';
+      document.getElementById('pantallaDetalleCarrera').style.display = 'block';
+    }
+
+    async function poblarSelectorSociosCarrera() {
+      const select = document.getElementById('selectSocioCarrera');
+      select.innerHTML = '<option value="">Cargando socios...</option>';
+      try {
+        const res = await fetch(APPS_SCRIPT_URL);
+        const data = await res.json();
+        if (data.status === 'success' && data.socios) {
+          const sociosOrdenados = [...data.socios].sort((a, b) => a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' }));
+          select.innerHTML = '<option value="">-- Elige tu Alias --</option>';
+          sociosOrdenados.forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s.nombre;
+            opt.textContent = s.nombre;
+            select.appendChild(opt);
+          });
+        }
+      } catch (err) {
+        select.innerHTML = '<option value="">Error al cargar socios</option>';
+      }
+    }
+
+    async function inscribirmeEnCarrera() {
+      const alias = document.getElementById('selectSocioCarrera').value;
+      const statusDiv = document.getElementById('statusInscripcionCarrera');
+      const btn = document.getElementById('btnInscribirCarrera');
+
+      if (!alias) {
+        alert("Por favor, selecciona tu Alias del desplegable.");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerText = "Registrando...";
+
+      const bodyData = new URLSearchParams();
+      bodyData.append('accion', 'inscribirCarrera');
+      bodyData.append('idCarrera', carreraSeleccionadaId);
+      bodyData.append('aliasSocio', alias);
+
+      try {
+        const res = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: bodyData.toString()
+        });
+        const data = await res.json();
+
+        statusDiv.style.display = 'block';
+        if (data.status === 'success') {
+          statusDiv.style.background = '#2e7d32';
+          statusDiv.style.color = '#fff';
+          statusDiv.innerText = "✅ " + data.message;
+          setTimeout(() => {
+            statusDiv.style.display = 'none';
+            verDetalleCarrera(carrerasGuardadas.findIndex(c => c.id === carreraSeleccionadaId));
+          }, 1500);
+        } else {
+          statusDiv.style.background = '#d32f2f';
+          statusDiv.style.color = '#fff';
+          statusDiv.innerText = "⚠️ " + data.message;
+        }
+      } catch (err) {
+        statusDiv.style.display = 'block';
+        statusDiv.style.background = '#d32f2f';
+        statusDiv.style.color = '#fff';
+        statusDiv.innerText = "Error de conexión al inscribirte.";
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "➕ Confirmar mi Asistencia";
+      }
+    }
+
+    function volverACarreras() {
+      document.getElementById('pantallaDetalleCarrera').style.display = 'none';
+      document.getElementById('pantallaCarreras').style.display = 'block';
+    }
+
     document.getElementById('formAltaSocio').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('btnAlta');
@@ -484,10 +636,9 @@
 
         const resultado = await response.json();
 
-        // ❌ CASO A: EL ALIAS YA EXISTE
         if (resultado.status === 'error_alias') {
           status.style.display = 'block';
-          status.style.background = '#d32f2f'; // Rojo alerta visible
+          status.style.background = '#d32f2f';
           status.style.color = '#ffffff';
           status.style.fontWeight = 'bold';
           status.style.padding = '12px';
@@ -505,13 +656,12 @@
           return;
         }
 
-        // ✅ CASO B: REGISTRO CORRECTO
         if (resultado.status === 'success') {
           aliasInput.style.border = '1px solid #ccc';
           aliasInput.style.background = '#ffffff';
 
           status.style.display = 'block';
-          status.style.background = '#2e7d32'; // Verde éxito
+          status.style.background = '#2e7d32';
           status.style.color = '#ffffff';
           status.style.fontWeight = 'bold';
           status.style.fontSize = '1.05rem';

@@ -2,7 +2,6 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="manifest" href="manifest.json">
   <title>Club de Trail MTV</title>
@@ -10,7 +9,6 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Club MTV">
-
 
   <style>
     :root {
@@ -152,7 +150,7 @@
       font-size: 0.85rem;
     }
 
-    /* TARJETAS DE NOTICIAS Y FORMULARIOS */
+    /* TARJETAS DE NOTICIAS, CARRERAS Y FORMULARIOS */
     .noticia-card {
       background-color: #f9f9f9;
       border-left: 4px solid var(--primary-color);
@@ -193,7 +191,7 @@
 
     <div class="content-area">
       
-      <!-- PANTALLA PRINCIPAL: GRID DE 4 BOTONES GRANDES -->
+      <!-- PANTALLA PRINCIPAL: GRID DE BOTONES GRANDES -->
       <div id="pantallaMenuGrid" class="menu-grid">
         
         <!-- Botón 1: Noticias (News.jpg) -->
@@ -236,6 +234,16 @@
           </div>
         </button>
 
+        <!-- Botón 5: Carreras de la Zona (Carreras.jpg) -->
+        <button class="grid-btn" onclick="abrirSeccion('carreras')">
+          <div class="grid-btn-bg" style="background-image: url('Carreras.jpg');"></div>
+          <div class="grid-btn-overlay"></div>
+          <div class="grid-btn-text">
+            <span>🏃</span>
+            <h2>Carreras de la Zona</h2>
+          </div>
+        </button>
+
       </div>
 
       <!-- SECCIÓN 1: NOTICIAS -->
@@ -246,7 +254,7 @@
         </div>
       </div>
 
-      <!-- SECCIÓN 1.1: DETALLE DE NOTICIA COMPLETA (NUEVA) -->
+      <!-- SECCIÓN 1.1: DETALLE DE NOTICIA COMPLETA -->
       <div id="pantallaDetalleNoticia" style="display: none;">
         <button class="btn-volver" onclick="volverANoticias()">← Volver a Noticias</button>
         <div class="noticia-detalle-card" style="background:#f9f9f9; padding:20px; border-radius:12px; border-left:5px solid var(--primary-color);">
@@ -309,12 +317,19 @@
         </div>
       </div>
 
+      <!-- SECCIÓN 5: CARRERAS DE LA ZONA -->
+      <div id="pantallaCarreras" style="display: none;">
+        <button class="btn-volver" onclick="volverAlMenu()">← Volver al Menú</button>
+        <div id="contenedorCarreras">
+          <p style="text-align: center; color: #666;">⏳ Cargando carreras de la zona...</p>
+        </div>
+      </div>
+
     </div>
   </div>
 
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxqUcLjuCT8yYX24mpERPYl3ApG9vbDru4kXjvA2QB6K5KwmqpUtT9vx-objE7zT9sCaQ/exec";
-
 
     function abrirSeccion(seccion) {
       document.getElementById('pantallaMenuGrid').style.display = 'none';
@@ -323,6 +338,7 @@
       document.getElementById('pantallaSocio').style.display = 'none';
       document.getElementById('pantallaChallenge').style.display = 'none';
       document.getElementById('pantallaHistoria').style.display = 'none';
+      document.getElementById('pantallaCarreras').style.display = 'none';
 
       if (seccion === 'noticias') {
         document.getElementById('pantallaNoticias').style.display = 'block';
@@ -333,7 +349,10 @@
         document.getElementById('pantallaChallenge').style.display = 'block';
       } else if (seccion === 'historia') {
         document.getElementById('pantallaHistoria').style.display = 'block';
-	cargarHistoria();
+        cargarHistoria();
+      } else if (seccion === 'carreras') {
+        document.getElementById('pantallaCarreras').style.display = 'block';
+        cargarCarreras();
       }
     }
 
@@ -342,12 +361,12 @@
       document.getElementById('pantallaSocio').style.display = 'none';
       document.getElementById('pantallaChallenge').style.display = 'none';
       document.getElementById('pantallaHistoria').style.display = 'none';
+      document.getElementById('pantallaCarreras').style.display = 'none';
 
       document.getElementById('pantallaMenuGrid').style.display = 'grid';
     }
 
-   
-let noticiasGuardadas = []; // Almacena temporalmente las noticias cargadas
+    let noticiasGuardadas = []; // Almacena temporalmente las noticias cargadas
 
     async function cargarNoticias() {
       const contenedor = document.getElementById('contenedorNoticias');
@@ -356,13 +375,13 @@ let noticiasGuardadas = []; // Almacena temporalmente las noticias cargadas
         const data = await res.json();
 
         if (data.status === 'success' && data.noticias && data.noticias.length > 0) {
-          noticiasGuardadas = data.noticias; // Guardamos en memoria local
+          noticiasGuardadas = data.noticias;
           contenedor.innerHTML = '';
           
           data.noticias.forEach((n, idx) => {
             const card = document.createElement('div');
             card.className = 'noticia-card';
-            card.style.cursor = 'pointer'; // Indica que es pulsable
+            card.style.cursor = 'pointer';
             card.onclick = () => verDetalleNoticia(idx);
             
             card.innerHTML = `
@@ -410,7 +429,36 @@ let noticiasGuardadas = []; // Almacena temporalmente las noticias cargadas
       document.getElementById('pantallaNoticias').style.display = 'block';
     }
 
-// MANEJADOR DE ENVÍO DE SOCIO CON AVISO CLARO DE ALIAS DUPLICADO
+    // CARGAR LISTADO DE CARRERAS DE LA ZONA
+    async function cargarCarreras() {
+      const contenedor = document.getElementById('contenedorCarreras');
+      try {
+        const res = await fetch(`${APPS_SCRIPT_URL}?tipo=carreras`);
+        const data = await res.json();
+
+        if (data.status === 'success' && data.carreras && data.carreras.length > 0) {
+          contenedor.innerHTML = '';
+          data.carreras.forEach((c) => {
+            const card = document.createElement('div');
+            card.className = 'noticia-card';
+            card.style.cursor = 'pointer';
+            card.innerHTML = `
+              <h3>🏃 ${c.nombre}</h3>
+              <span class="noticia-fecha">📅 ${c.fecha}</span>
+              <p>${c.info ? c.info.substring(0, 90) + "..." : "Sin información adicional."}</p>
+              <span style="font-size:0.8rem; color:var(--primary-color); font-weight:bold; display:block; margin-top:8px;">Ver detalles e inscripciones ➔</span>
+            `;
+            contenedor.appendChild(card);
+          });
+        } else {
+          contenedor.innerHTML = '<p style="text-align:center; color:#666;">No hay carreras registradas en este momento.</p>';
+        }
+      } catch (err) {
+        contenedor.innerHTML = '<p style="text-align:center; color:red;">Error al cargar las carreras.</p>';
+      }
+    }
+
+    // MANEJADOR DE ENVÍO DE SOCIO CON AVISO CLARO DE ALIAS DUPLICADO
     document.getElementById('formAltaSocio').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('btnAlta');
@@ -472,9 +520,8 @@ let noticiasGuardadas = []; // Almacena temporalmente las noticias cargadas
           status.style.marginTop = '15px';
           status.innerText = "¡ALTA DE NUEVO SOCIO CORRECTA! ✅\nBienvenido/a al Club de Montaña MTV.";
 
-       //Borramos el formulario
-	  document.getElementById('formAltaSocio').reset();
-       // a los 3 segundos volvemos al menú principal
+          document.getElementById('formAltaSocio').reset();
+
           setTimeout(() => {
             status.style.display = 'none';
             volverAlMenu();
@@ -482,7 +529,6 @@ let noticiasGuardadas = []; // Almacena temporalmente las noticias cargadas
         }
 
       } catch (err) {
-        // En caso de bloqueo CORS en segundo plano
         status.style.display = 'block';
         status.style.background = '#2e7d32';
         status.style.color = '#ffffff';
@@ -493,6 +539,7 @@ let noticiasGuardadas = []; // Almacena temporalmente las noticias cargadas
         btn.innerText = "Enviar Solicitud de Alta";
       }
     });
+
     async function cargarHistoria() {
       const titulo = document.getElementById('historiaTitulo');
       const texto = document.getElementById('historiaTexto');
@@ -513,15 +560,13 @@ let noticiasGuardadas = []; // Almacena temporalmente las noticias cargadas
       }
     }
 
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('Service Worker registrado con éxito', reg))
-      .catch(err => console.log('Error al registrar Service Worker', err));
-  });
-}
-
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('Service Worker registrado con éxito', reg))
+          .catch(err => console.log('Error al registrar Service Worker', err));
+      });
+    }
   </script>
 </body>
 </html>

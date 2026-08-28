@@ -400,6 +400,7 @@
 
     let noticiasGuardadas = [];
 
+   // 1. CARGAR NOTICIAS (CON ORDEN INVERSO .reverse())
     async function cargarNoticias() {
       const contenedor = document.getElementById('contenedorNoticias');
       try {
@@ -407,10 +408,11 @@
         const data = await res.json();
 
         if (data.status === 'success' && data.noticias && data.noticias.length > 0) {
-          noticiasGuardadas = data.noticias;
+          // Invertimos la lista para que la última fila del Excel sea la primera en la App
+          noticiasGuardadas = data.noticias.reverse(); 
           contenedor.innerHTML = '';
           
-          data.noticias.forEach((n, idx) => {
+          noticiasGuardadas.forEach((n, idx) => {
             const card = document.createElement('div');
             card.className = 'noticia-card';
             card.style.cursor = 'pointer';
@@ -419,7 +421,7 @@
             card.innerHTML = `
               <h3>${n.titulo}</h3>
               <span class="noticia-fecha">📅 ${n.fecha}</span>
-              <p>${n.resumen || n.contenido.substring(0, 100) + "..."}</p>
+              <p>${n.resumen || (n.contenido ? n.contenido.substring(0, 100) + "..." : "")}</p>
               <span style="font-size:0.8rem; color:var(--primary-color); font-weight:bold; display:block; margin-top:8px;">Leer más ➔</span>
             `;
             contenedor.appendChild(card);
@@ -432,6 +434,7 @@
       }
     }
 
+    // 2. VER DETALLE DE NOTICIA (CON BOTÓN DE ENLACE E ICONO DE FOTO)
     function verDetalleNoticia(index) {
       const noticia = noticiasGuardadas[index];
       if (!noticia) return;
@@ -441,22 +444,26 @@
       document.getElementById('noticiaDetalleContenido').innerText = noticia.contenido || noticia.resumen;
 
       const linkContainer = document.getElementById('noticiaDetalleLinkContainer');
+      linkContainer.innerHTML = ''; // Limpiamos contenedor
+
+      // Botón Enlace Relacionado (si existe)
       if (noticia.url && noticia.url.trim() !== "") {
-        linkContainer.innerHTML = `
-          <a href="${noticia.url}" target="_blank" class="btn-submit" style="display:inline-block; text-align:center; text-decoration:none; background:var(--primary-color); color:white; padding:10px 16px; border-radius:8px; font-weight:bold;">
+        linkContainer.innerHTML += `
+          <a href="${noticia.url}" target="_blank" class="btn-submit" style="display:inline-block; text-align:center; text-decoration:none; background:var(--primary-color); color:white; padding:10px 16px; border-radius:8px; font-weight:bold; margin-bottom:10px;">
             🔗 Abrir Enlace Relacionado
           </a>`;
-      } else {
-        linkContainer.innerHTML = '';
+      }
+
+      // Botón Icono de Foto (si existe imagen en Columna F)
+      if (noticia.imagen && noticia.imagen.trim() !== "") {
+        linkContainer.innerHTML += `
+          <a href="${noticia.imagen}" target="_blank" class="btn-submit" style="display:inline-block; text-align:center; text-decoration:none; background:#455a64; color:white; padding:10px 16px; border-radius:8px; font-weight:bold;">
+            📷 Ver Foto de la Noticia
+          </a>`;
       }
 
       document.getElementById('pantallaNoticias').style.display = 'none';
       document.getElementById('pantallaDetalleNoticia').style.display = 'block';
-    }
-
-    function volverANoticias() {
-      document.getElementById('pantallaDetalleNoticia').style.display = 'none';
-      document.getElementById('pantallaNoticias').style.display = 'block';
     }
 
     let carrerasGuardadas = [];

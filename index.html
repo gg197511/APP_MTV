@@ -365,6 +365,7 @@
       document.getElementById('pantallaMenuGrid').style.display = 'none';
 
       document.getElementById('pantallaNoticias').style.display = 'none';
+      document.getElementById('pantallaDetalleNoticia').style.display = 'none';
       document.getElementById('pantallaSocio').style.display = 'none';
       document.getElementById('pantallaChallenge').style.display = 'none';
       document.getElementById('pantallaHistoria').style.display = 'none';
@@ -389,6 +390,7 @@
 
     function volverAlMenu() {
       document.getElementById('pantallaNoticias').style.display = 'none';
+      document.getElementById('pantallaDetalleNoticia').style.display = 'none';
       document.getElementById('pantallaSocio').style.display = 'none';
       document.getElementById('pantallaChallenge').style.display = 'none';
       document.getElementById('pantallaHistoria').style.display = 'none';
@@ -400,7 +402,6 @@
 
     let noticiasGuardadas = [];
 
-   // 1. CARGAR NOTICIAS (CON ORDEN INVERSO .reverse())
     async function cargarNoticias() {
       const contenedor = document.getElementById('contenedorNoticias');
       try {
@@ -408,8 +409,7 @@
         const data = await res.json();
 
         if (data.status === 'success' && data.noticias && data.noticias.length > 0) {
-          // Invertimos la lista para que la última fila del Excel sea la primera en la App
-          noticiasGuardadas = data.noticias.reverse(); 
+          noticiasGuardadas = data.noticias.reverse(); // Orden inverso (más recientes primero)
           contenedor.innerHTML = '';
           
           noticiasGuardadas.forEach((n, idx) => {
@@ -434,7 +434,6 @@
       }
     }
 
-    // 2. VER DETALLE DE NOTICIA (CON BOTÓN DE ENLACE E ICONO DE FOTO)
     function verDetalleNoticia(index) {
       const noticia = noticiasGuardadas[index];
       if (!noticia) return;
@@ -444,26 +443,31 @@
       document.getElementById('noticiaDetalleContenido').innerText = noticia.contenido || noticia.resumen;
 
       const linkContainer = document.getElementById('noticiaDetalleLinkContainer');
-      linkContainer.innerHTML = ''; // Limpiamos contenedor
+      linkContainer.innerHTML = '';
 
-      // Botón Enlace Relacionado (si existe)
-      if (noticia.url && noticia.url.trim() !== "") {
-        linkContainer.innerHTML += `
-          <a href="${noticia.url}" target="_blank" class="btn-submit" style="display:inline-block; text-align:center; text-decoration:none; background:var(--primary-color); color:white; padding:10px 16px; border-radius:8px; font-weight:bold; margin-bottom:10px;">
-            🔗 Abrir Enlace Relacionado
-          </a>`;
-      }
-
-      // Botón Icono de Foto (si existe imagen en Columna F)
+      // Muestra la imagen directamente dentro del detalle de la noticia
       if (noticia.imagen && noticia.imagen.trim() !== "") {
         linkContainer.innerHTML += `
-          <a href="${noticia.imagen}" target="_blank" class="btn-submit" style="display:inline-block; text-align:center; text-decoration:none; background:#455a64; color:white; padding:10px 16px; border-radius:8px; font-weight:bold;">
-            📷 Ver Foto de la Noticia
+          <div style="margin-bottom:15px; text-align:center;">
+            <img src="${noticia.imagen}" alt="Foto Noticia" style="width:100%; max-height:250px; object-fit:cover; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.15);">
+          </div>`;
+      }
+
+      // Enlace relacionado opcional
+      if (noticia.url && noticia.url.trim() !== "") {
+        linkContainer.innerHTML += `
+          <a href="${noticia.url}" target="_blank" class="btn-submit" style="display:inline-block; text-align:center; text-decoration:none; background:var(--primary-color); color:white; padding:10px 16px; border-radius:8px; font-weight:bold;">
+            🔗 Abrir Enlace Relacionado
           </a>`;
       }
 
       document.getElementById('pantallaNoticias').style.display = 'none';
       document.getElementById('pantallaDetalleNoticia').style.display = 'block';
+    }
+
+    function volverANoticias() {
+      document.getElementById('pantallaDetalleNoticia').style.display = 'none';
+      document.getElementById('pantallaNoticias').style.display = 'block';
     }
 
     let carrerasGuardadas = [];

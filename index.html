@@ -204,13 +204,13 @@
           </div>
         </button>
 
-        <!-- Botón 2: Hazte Socio (Socios.jpg) -->
+        <!-- Botón 2: Socios (Socios.jpg) -->
         <button class="grid-btn" onclick="abrirSeccion('socio')">
           <div class="grid-btn-bg" style="background-image: url('Socios.jpg');"></div>
           <div class="grid-btn-overlay"></div>
           <div class="grid-btn-text">
-            <span>📝</span>
-            <h2>Hazte Socio</h2>
+            <span>👤</span>
+            <h2>Socios</h2>
           </div>
         </button>
 
@@ -265,10 +265,39 @@
         </div>
       </div>
 
-      <!-- SECCIÓN 2: HAZTE SOCIO -->
+      <!-- SECCIÓN 2: SOCIOS (PANEL ACCESO + FORMULARIO ALTA) -->
       <div id="pantallaSocio" style="display: none;">
         <button class="btn-volver" onclick="volverAlMenu()">← Volver al Menú</button>
-        <form id="formAltaSocio">
+        
+        <!-- A) PANEL DE ACCESO A SOCIOS REGISTRADOS -->
+        <div id="bloqueLoginSocio" style="background:#f9f9f9; padding:18px; border-radius:12px; border:1px solid #e0e0e0; margin-bottom:20px;">
+          <h3 style="font-size:1.1rem; color:var(--primary-color); margin-bottom:10px;">🔐 Acceso a mi Perfil</h3>
+          <p style="font-size:0.85rem; color:#666; margin-bottom:15px;">Accede con tu Alias y tu teléfono móvil para consultar o modificar tus datos.</p>
+          
+          <div class="form-group">
+            <label for="loginAlias">Alias / Nombre corto:</label>
+            <input type="text" id="loginAlias" placeholder="Tu Alias registrado">
+          </div>
+          <div class="form-group">
+            <label for="loginTel">Teléfono móvil (Contraseña):</label>
+            <input type="tel" id="loginTel" placeholder="Tu teléfono registrado">
+          </div>
+          <button type="button" onclick="iniciarSesionSocio()" class="btn-submit" style="background:#333;">Entrar a mi Perfil</button>
+          <div id="statusLoginMessage" style="margin-top:10px; font-size:0.85rem; text-align:center; display:none; padding:8px; border-radius:6px;"></div>
+        </div>
+
+        <!-- B) BOTÓN Y FORMULARIO DE NUEVO SOCIO -->
+        <div style="text-align:center; margin-bottom:15px;">
+          <p style="font-size:0.9rem; color:#555; margin-bottom:8px;">¿Aún no te has dado de alta en el club?</p>
+          <button type="button" onclick="mostrarFormularioAlta()" id="btnDesplegarAlta" class="btn-submit" style="background:var(--primary-color);">
+            📝 Alta de Nuevo Socio
+          </button>
+        </div>
+
+        <!-- FORMULARIO DE ALTA -->
+        <form id="formAltaSocio" style="display: none; background:#f4f9f4; padding:15px; border-radius:12px; border:1px solid #c8e6c9; margin-top:15px;">
+          <h3 style="font-size:1.1rem; color:var(--primary-color); margin-bottom:12px;">Formulario de Registro</h3>
+          
           <div class="form-group">
             <label for="aliasSocio">Alias / Nombre corto (*):</label>
             <input type="text" id="aliasSocio" required placeholder="Ej. AniMontaña (Como quieres que te llamemos)">
@@ -285,6 +314,18 @@
             <label for="telSocio">Teléfono de Contacto (*):</label>
             <input type="tel" id="telSocio" required placeholder="600000000">
           </div>
+
+          <!-- CAMPO NUEVO: SUSCRIPCIÓN AL BOLETÍN DE NOTICIAS -->
+          <div class="form-group" style="background:#fff; padding:10px; border-radius:8px; border:1px solid #ddd;">
+            <label style="margin-bottom:8px; color:var(--primary-color);">📧 Boletín de Noticias por Correo:</label>
+            <div style="display:flex; align-items:center; gap:10px; font-size:0.9rem;">
+              <input type="checkbox" id="checkActivarNews" style="width:20px; height:20px; accent-color:var(--primary-color);" checked>
+              <label for="checkActivarNews" style="margin-bottom:0; font-weight:normal; cursor:pointer;">
+                Deseo recibir las novedades diarias del club en mi email
+              </label>
+            </div>
+          </div>
+
           <div class="form-group">
             <label for="comentariosSocio">Comentarios / Observaciones:</label>
             <textarea id="comentariosSocio" rows="3" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem;" placeholder="¿Dudas, experiencia en montaña, si estás federado/a...?"></textarea>
@@ -377,6 +418,7 @@
         cargarNoticias();
       } else if (seccion === 'socio') {
         document.getElementById('pantallaSocio').style.display = 'block';
+        document.getElementById('formAltaSocio').style.display = 'none';
       } else if (seccion === 'challenge') {
         document.getElementById('pantallaChallenge').style.display = 'block';
       } else if (seccion === 'historia') {
@@ -400,6 +442,35 @@
       document.getElementById('pantallaMenuGrid').style.display = 'grid';
     }
 
+    function mostrarFormularioAlta() {
+      const form = document.getElementById('formAltaSocio');
+      if (form.style.display === 'none' || form.style.display === '') {
+        form.style.display = 'block';
+        form.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        form.style.display = 'none';
+      }
+    }
+
+    function iniciarSesionSocio() {
+      const alias = document.getElementById('loginAlias').value.trim();
+      const tel = document.getElementById('loginTel').value.trim();
+      const status = document.getElementById('statusLoginMessage');
+
+      if (!alias || !tel) {
+        status.style.display = 'block';
+        status.style.background = '#d32f2f';
+        status.style.color = '#fff';
+        status.innerText = "Por favor, introduce tu Alias y Teléfono.";
+        return;
+      }
+
+      status.style.display = 'block';
+      status.style.background = '#2e7d32';
+      status.style.color = '#fff';
+      status.innerText = "⏳ Validando credenciales...";
+    }
+
     let noticiasGuardadas = [];
 
     async function cargarNoticias() {
@@ -409,7 +480,7 @@
         const data = await res.json();
 
         if (data.status === 'success' && data.noticias && data.noticias.length > 0) {
-          noticiasGuardadas = data.noticias.reverse(); // Orden inverso (más recientes primero)
+          noticiasGuardadas = data.noticias.reverse();
           contenedor.innerHTML = '';
           
           noticiasGuardadas.forEach((n, idx) => {
@@ -445,7 +516,6 @@
       const linkContainer = document.getElementById('noticiaDetalleLinkContainer');
       linkContainer.innerHTML = '';
 
-      // Muestra la imagen directamente dentro del detalle de la noticia
       if (noticia.imagen && noticia.imagen.trim() !== "") {
         linkContainer.innerHTML += `
           <div style="margin-bottom:15px; text-align:center;">
@@ -453,7 +523,6 @@
           </div>`;
       }
 
-      // Enlace relacionado opcional
       if (noticia.url && noticia.url.trim() !== "") {
         linkContainer.innerHTML += `
           <a href="${noticia.url}" target="_blank" class="btn-submit" style="display:inline-block; text-align:center; text-decoration:none; background:var(--primary-color); color:white; padding:10px 16px; border-radius:8px; font-weight:bold;">
@@ -627,6 +696,7 @@
       const btn = document.getElementById('btnAlta');
       const status = document.getElementById('statusSocioMessage');
       const aliasInput = document.getElementById('aliasSocio');
+      const checkNews = document.getElementById('checkActivarNews');
 
       btn.disabled = true;
       btn.innerText = "Comprobando datos...";
@@ -637,6 +707,7 @@
       datos.append('email', document.getElementById('emailSocio').value);
       datos.append('telefono', document.getElementById('telSocio').value);
       datos.append('comentarios', document.getElementById('comentariosSocio').value);
+      datos.append('activarNews', checkNews.checked ? 'SI' : 'NO');
 
       try {
         const response = await fetch(APPS_SCRIPT_URL, {

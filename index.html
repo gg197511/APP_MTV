@@ -265,7 +265,7 @@
         </div>
       </div>
 
-      <!-- SECCIÓN 2: SOCIOS (PANEL ACCESO + FORMULARIO ALTA) -->
+      <!-- SECCIÓN 2: SOCIOS (PANEL ACCESO + FORMULARIO ALTA + MI PERFIL) -->
       <div id="pantallaSocio" style="display: none;">
         <button class="btn-volver" onclick="volverAlMenu()">← Volver al Menú</button>
         
@@ -282,12 +282,54 @@
             <label for="loginTel">Teléfono móvil (Contraseña):</label>
             <input type="tel" id="loginTel" placeholder="Tu teléfono registrado">
           </div>
-          <button type="button" onclick="iniciarSesionSocio()" class="btn-submit" style="background:#333;">Entrar a mi Perfil</button>
+          <button type="button" id="btnLogin" onclick="iniciarSesionSocio()" class="btn-submit" style="background:#333;">Entrar a mi Perfil</button>
           <div id="statusLoginMessage" style="margin-top:10px; font-size:0.85rem; text-align:center; display:none; padding:8px; border-radius:6px;"></div>
         </div>
 
-        <!-- B) BOTÓN Y FORMULARIO DE NUEVO SOCIO -->
-        <div style="text-align:center; margin-bottom:15px;">
+        <!-- B) VISTA DE EDICIÓN DE PERFIL DE SOCIO (INICIALMENTE OCULTA) -->
+        <div id="bloquePerfilSocio" style="display:none; background:#e8f5e9; padding:18px; border-radius:12px; border:1px solid #a5d6a7; margin-bottom:20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h3 style="font-size:1.1rem; color:var(--primary-color);">👤 Perfil de <span id="lblPerfilAlias"></span></h3>
+            <button onclick="cerrarSesionSocio()" style="background:#d32f2f; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:0.75rem; cursor:pointer;">Cerrar Sesión</button>
+          </div>
+          <p style="font-size:0.8rem; color:#555; margin-bottom:15px;">Puedes modificar tu nombre, correo, teléfono y suscripción al boletín. El Alias no se puede cambiar.</p>
+          
+          <input type="hidden" id="editNumFila">
+          
+          <div class="form-group">
+            <label for="editNombre">Nombre Completo:</label>
+            <input type="text" id="editNombre" required>
+          </div>
+          <div class="form-group">
+            <label for="editEmail">Correo Electrónico:</label>
+            <input type="email" id="editEmail" required>
+          </div>
+          <div class="form-group">
+            <label for="editTel">Teléfono Móvil:</label>
+            <input type="tel" id="editTel" required>
+          </div>
+
+          <div class="form-group" style="background:#fff; padding:10px; border-radius:8px; border:1px solid #ddd;">
+            <label style="margin-bottom:8px; color:var(--primary-color);">📧 Boletín de Noticias por Correo:</label>
+            <div style="display:flex; align-items:center; gap:10px; font-size:0.9rem;">
+              <input type="checkbox" id="editCheckNews" style="width:20px; height:20px; accent-color:var(--primary-color);">
+              <label for="editCheckNews" style="margin-bottom:0; font-weight:normal; cursor:pointer;">
+                Deseo recibir las novedades diarias del club en mi email
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="editComentarios">Comentarios / Observaciones:</label>
+            <textarea id="editComentarios" rows="3" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem;"></textarea>
+          </div>
+
+          <button type="button" onclick="guardarCambiosPerfil()" id="btnGuardarPerfil" class="btn-submit" style="background:var(--primary-color);">💾 Guardar Cambios</button>
+          <div id="statusPerfilMessage" style="margin-top:10px; font-size:0.85rem; text-align:center; display:none; padding:8px; border-radius:6px;"></div>
+        </div>
+
+        <!-- C) BOTÓN Y FORMULARIO DE NUEVO SOCIO -->
+        <div id="contenedorBotonAlta" style="text-align:center; margin-bottom:15px;">
           <p style="font-size:0.9rem; color:#555; margin-bottom:8px;">¿Aún no te has dado de alta en el club?</p>
           <button type="button" onclick="mostrarFormularioAlta()" id="btnDesplegarAlta" class="btn-submit" style="background:var(--primary-color);">
             📝 Alta de Nuevo Socio
@@ -315,7 +357,6 @@
             <input type="tel" id="telSocio" required placeholder="600000000">
           </div>
 
-          <!-- CAMPO NUEVO: SUSCRIPCIÓN AL BOLETÍN DE NOTICIAS -->
           <div class="form-group" style="background:#fff; padding:10px; border-radius:8px; border:1px solid #ddd;">
             <label style="margin-bottom:8px; color:var(--primary-color);">📧 Boletín de Noticias por Correo:</label>
             <div style="display:flex; align-items:center; gap:10px; font-size:0.9rem;">
@@ -452,10 +493,12 @@
       }
     }
 
-    function iniciarSesionSocio() {
+    // 1. INICIAR SESIÓN Y CARGAR PERFIL
+    async function iniciarSesionSocio() {
       const alias = document.getElementById('loginAlias').value.trim();
       const tel = document.getElementById('loginTel').value.trim();
       const status = document.getElementById('statusLoginMessage');
+      const btn = document.getElementById('btnLogin');
 
       if (!alias || !tel) {
         status.style.display = 'block';
@@ -465,10 +508,101 @@
         return;
       }
 
+      btn.disabled = true;
       status.style.display = 'block';
-      status.style.background = '#2e7d32';
+      status.style.background = '#0288d1';
       status.style.color = '#fff';
       status.innerText = "⏳ Validando credenciales...";
+
+      try {
+        const res = await fetch(`${APPS_SCRIPT_URL}?tipo=loginSocio&alias=${encodeURIComponent(alias)}&tel=${encodeURIComponent(tel)}`);
+        const data = await res.json();
+
+        if (data.status === 'success' && data.socio) {
+          const s = data.socio;
+          document.getElementById('editNumFila').value = s.numFila;
+          document.getElementById('lblPerfilAlias').innerText = s.alias;
+          document.getElementById('editNombre').value = s.nombre;
+          document.getElementById('editEmail').value = s.email;
+          document.getElementById('editTel').value = s.telefono;
+          document.getElementById('editComentarios').value = s.comentarios;
+          document.getElementById('editCheckNews').checked = (s.activarNews === 'SI');
+
+          document.getElementById('bloqueLoginSocio').style.display = 'none';
+          document.getElementById('contenedorBotonAlta').style.display = 'none';
+          document.getElementById('formAltaSocio').style.display = 'none';
+          document.getElementById('bloquePerfilSocio').style.display = 'block';
+
+          status.style.display = 'none';
+        } else {
+          status.style.background = '#d32f2f';
+          status.style.color = '#fff';
+          status.innerText = "⚠️ " + (data.message || "Credenciales incorrectas.");
+        }
+      } catch (err) {
+        status.style.background = '#d32f2f';
+        status.style.color = '#fff';
+        status.innerText = "Error de conexión al iniciar sesión.";
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // 2. GUARDAR CAMBIOS DE PERFIL
+    async function guardarCambiosPerfil() {
+      const numFila = document.getElementById('editNumFila').value;
+      const status = document.getElementById('statusPerfilMessage');
+      const btn = document.getElementById('btnGuardarPerfil');
+
+      btn.disabled = true;
+      btn.innerText = "Guardando...";
+
+      const bodyData = new URLSearchParams();
+      bodyData.append('accion', 'actualizarSocio');
+      bodyData.append('numFila', numFila);
+      bodyData.append('nuevoSocio', document.getElementById('editNombre').value);
+      bodyData.append('email', document.getElementById('editEmail').value);
+      bodyData.append('telefono', document.getElementById('editTel').value);
+      bodyData.append('comentarios', document.getElementById('editComentarios').value);
+      bodyData.append('activarNews', document.getElementById('editCheckNews').checked ? 'SI' : 'NO');
+
+      try {
+        const res = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: bodyData.toString()
+        });
+        const data = await res.json();
+
+        status.style.display = 'block';
+        if (data.status === 'success') {
+          status.style.background = '#2e7d32';
+          status.style.color = '#fff';
+          status.innerText = "✅ " + data.message;
+          setTimeout(() => { status.style.display = 'none'; }, 3000);
+        } else {
+          status.style.background = '#d32f2f';
+          status.style.color = '#fff';
+          status.innerText = "⚠️ " + data.message;
+        }
+      } catch (err) {
+        status.style.display = 'block';
+        status.style.background = '#d32f2f';
+        status.style.color = '#fff';
+        status.innerText = "Error de conexión al guardar los cambios.";
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "💾 Guardar Cambios";
+      }
+    }
+
+    // 3. CERRAR SESIÓN DE SOCIO
+    function cerrarSesionSocio() {
+      document.getElementById('loginAlias').value = '';
+      document.getElementById('loginTel').value = '';
+      document.getElementById('bloquePerfilSocio').style.display = 'none';
+      document.getElementById('bloqueLoginSocio').style.display = 'block';
+      document.getElementById('contenedorBotonAlta').style.display = 'block';
     }
 
     let noticiasGuardadas = [];

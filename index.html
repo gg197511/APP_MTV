@@ -694,7 +694,12 @@
               <h3>🏃 ${c.nombre}</h3>
               <span class="noticia-fecha">📅 ${c.fecha}</span>
               <p>${c.info ? c.info.substring(0, 90) + "..." : "Sin información adicional."}</p>
-              <span style="font-size:0.8rem; color:var(--primary-color); font-weight:bold; display:block; margin-top:8px;">Ver detalles e inscritos ➔</span>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                <span style="font-size:0.8rem; color:var(--primary-color); font-weight:bold;">Ver detalles e inscritos ➔</span>
+                <span style="font-size:1.15rem; color:#d32f2f; font-weight:bold; background:#ffebee; border:1px solid #ffcdd2; padding:2px 10px; border-radius:12px;" title="Socios inscritos">
+                  👥 ${c.totalInscritos || 0}
+                </span>
+              </div>
             `;
             contenedor.appendChild(card);
           });
@@ -705,7 +710,6 @@
         contenedor.innerHTML = '<p style="text-align:center; color:red;">Error al cargar las carreras.</p>';
       }
     }
-
     async function verDetalleCarrera(index) {
       const carrera = carrerasGuardadas[index];
       if (!carrera) return;

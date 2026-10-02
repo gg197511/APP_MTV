@@ -164,19 +164,31 @@
     .noticia-card p { font-size: 0.9rem; color: #444; line-height: 1.4; }
 
     .form-group { margin-bottom: 15px; }
-    label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 6px; }
-    input[type="text"], input[type="email"], input[type="tel"], select {
-      width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem;
+    label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 5px; color: #333; }
+    input[type="text"], input[type="email"], input[type="tel"], input[type="date"], select, textarea {
+      width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 0.95rem;
     }
 
     .btn-submit {
-      width: 100%; padding: 14px; background-color: var(--primary-color); color: #fff;
-      border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer;
+      width: 100%; padding: 12px; background-color: var(--primary-color); color: #fff;
+      border: none; border-radius: 8px; font-size: 0.95rem; font-weight: bold; cursor: pointer;
     }
 
     .banner-challenge {
       background: linear-gradient(135deg, #d32f2f, #b71c1c);
       color: white; padding: 20px; border-radius: 12px; text-align: center;
+    }
+
+    .badge-socio {
+      display: inline-block;
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #a5d6a7;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      margin: 4px;
     }
   </style>
 </head>
@@ -265,10 +277,23 @@
         </div>
       </div>
 
-      <!-- SECCIÓN 2: SOCIOS (PANEL ACCESO + FORMULARIO ALTA + MI PERFIL) -->
+      <!-- SECCIÓN 2: SOCIOS (PANEL ACCESO + FORMULARIO ALTA + MI PERFIL + LISTA DE ACTIVOS) -->
       <div id="pantallaSocio" style="display: none;">
         <button class="btn-volver" onclick="volverAlMenu()">← Volver al Menú</button>
         
+        <!-- BOTÓN PARA VER ALIAS DE SOCIOS ACTIVOS -->
+        <button type="button" onclick="toggleListadoSociosActivos()" class="btn-submit" style="background:#455a64; margin-bottom:15px;">
+          👥 Ver Listado de Socios Activos
+        </button>
+
+        <!-- BLOQUE LISTADO DE SOCIOS ACTIVOS (INICIALMENTE OCULTO) -->
+        <div id="bloqueSociosActivos" style="display:none; background:#f5f5f5; padding:15px; border-radius:12px; border:1px solid #ccc; margin-bottom:15px;">
+          <h3 style="font-size:1rem; color:#37474f; margin-bottom:10px;">📋 Socios Activos del Club</h3>
+          <div id="contenedorListaSociosActivos" style="display:flex; flex-wrap:wrap; gap:4px;">
+            <p style="font-size:0.85rem; color:#666;">⏳ Cargando listado...</p>
+          </div>
+        </div>
+
         <!-- A) PANEL DE ACCESO A SOCIOS REGISTRADOS -->
         <div id="bloqueLoginSocio" style="background:#f9f9f9; padding:18px; border-radius:12px; border:1px solid #e0e0e0; margin-bottom:20px;">
           <h3 style="font-size:1.1rem; color:var(--primary-color); margin-bottom:10px;">🔐 Acceso a mi Perfil</h3>
@@ -286,19 +311,22 @@
           <div id="statusLoginMessage" style="margin-top:10px; font-size:0.85rem; text-align:center; display:none; padding:8px; border-radius:6px;"></div>
         </div>
 
-        <!-- B) VISTA DE EDICIÓN DE PERFIL DE SOCIO (INICIALMENTE OCULTA) -->
+        <!-- B) VISTA DE EDICIÓN DE PERFIL DE SOCIO (24 CAMPOS EXTENDIDOS) -->
         <div id="bloquePerfilSocio" style="display:none; background:#e8f5e9; padding:18px; border-radius:12px; border:1px solid #a5d6a7; margin-bottom:20px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
             <h3 style="font-size:1.1rem; color:var(--primary-color);">👤 Perfil de <span id="lblPerfilAlias"></span></h3>
             <button onclick="cerrarSesionSocio()" style="background:#d32f2f; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:0.75rem; cursor:pointer;">Cerrar Sesión</button>
           </div>
-          <p style="font-size:0.8rem; color:#555; margin-bottom:15px;">Puedes modificar tu nombre, correo, teléfono y suscripción al boletín. El Alias no se puede cambiar.</p>
           
           <input type="hidden" id="editNumFila">
           
           <div class="form-group">
             <label for="editNombre">Nombre Completo:</label>
             <input type="text" id="editNombre" required>
+          </div>
+          <div class="form-group">
+            <label for="editDNI">DNI / NIE:</label>
+            <input type="text" id="editDNI">
           </div>
           <div class="form-group">
             <label for="editEmail">Correo Electrónico:</label>
@@ -308,20 +336,104 @@
             <label for="editTel">Teléfono Móvil:</label>
             <input type="tel" id="editTel" required>
           </div>
+          <div class="form-group">
+            <label for="editDireccion">Dirección:</label>
+            <input type="text" id="editDireccion">
+          </div>
+          <div style="display:flex; gap:10px;">
+            <div class="form-group" style="flex:1;">
+              <label for="editCP">CP:</label>
+              <input type="text" id="editCP">
+            </div>
+            <div class="form-group" style="flex:2;">
+              <label for="editPoblacion">Población:</label>
+              <input type="text" id="editPoblacion">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="editFechaNac">Fecha Nacimiento:</label>
+            <input type="date" id="editFechaNac">
+          </div>
+          <div class="form-group">
+            <label for="editAlergias">Alergias / Observaciones Médicas:</label>
+            <input type="text" id="editAlergias">
+          </div>
 
-          <div class="form-group" style="background:#fff; padding:10px; border-radius:8px; border:1px solid #ddd;">
-            <label style="margin-bottom:8px; color:var(--primary-color);">📧 Boletín de Noticias por Correo:</label>
-            <div style="display:flex; align-items:center; gap:10px; font-size:0.9rem;">
-              <input type="checkbox" id="editCheckNews" style="width:20px; height:20px; accent-color:var(--primary-color);">
-              <label for="editCheckNews" style="margin-bottom:0; font-weight:normal; cursor:pointer;">
-                Deseo recibir las novedades diarias del club en mi email
-              </label>
+          <div style="display:flex; gap:10px;">
+            <div class="form-group" style="flex:1;">
+              <label for="editTalla1">Talla Camiseta:</label>
+              <select id="editTalla1">
+                <option value="">Selecciona</option>
+                <option value="XS">XS</option>
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+                <option value="XXL">XXL</option>
+              </select>
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label for="editTalla2">Talla Prenda 2:</label>
+              <select id="editTalla2">
+                <option value="">Selecciona</option>
+                <option value="XS">XS</option>
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+                <option value="XXL">XXL</option>
+              </select>
+            </div>
+          </div>
+
+          <hr style="margin: 15px 0; border:0; border-top:1px solid #a5d6a7;">
+          <h4 style="font-size:0.95rem; color:#1b5e20; margin-bottom:10px;">🚨 Urgencias</h4>
+
+          <div class="form-group">
+            <label for="editContactoUrgencia">Contacto Urgencia (Nombre):</label>
+            <input type="text" id="editContactoUrgencia">
+          </div>
+          <div class="form-group">
+            <label for="editTelUrgencia">Teléfono Urgencia:</label>
+            <input type="tel" id="editTelUrgencia">
+          </div>
+
+          <hr style="margin: 15px 0; border:0; border-top:1px solid #a5d6a7;">
+          <h4 style="font-size:0.95rem; color:#1b5e20; margin-bottom:10px;">⚙️ Permisos y Preferencias</h4>
+
+          <div class="form-group" style="background:#fff; padding:10px; border-radius:8px; border:1px solid #ccc;">
+            <label style="margin-bottom:8px; color:var(--primary-color);">📧 Boletín Diario de Noticias:</label>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <input type="checkbox" id="editCheckNews" style="width:20px; height:20px;">
+              <label for="editCheckNews" style="margin-bottom:0; font-weight:normal;">Deseo recibir el boletín por email</label>
             </div>
           </div>
 
           <div class="form-group">
+            <label for="editAutoBBDD">Autorización BBDD:</label>
+            <select id="editAutoBBDD">
+              <option value="SI">SI</option>
+              <option value="NO">NO</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="editAutoImagen">Autorización Imagen:</label>
+            <select id="editAutoImagen">
+              <option value="SI">SI</option>
+              <option value="NO">NO</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="editReglamento">Acepto Reglamento:</label>
+            <select id="editReglamento">
+              <option value="SI">SI</option>
+              <option value="NO">NO</option>
+            </select>
+          </div>
+
+          <div class="form-group">
             <label for="editComentarios">Comentarios / Observaciones:</label>
-            <textarea id="editComentarios" rows="3" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem;"></textarea>
+            <textarea id="editComentarios" rows="3"></textarea>
           </div>
 
           <button type="button" onclick="guardarCambiosPerfil()" id="btnGuardarPerfil" class="btn-submit" style="background:var(--primary-color);">💾 Guardar Cambios</button>
@@ -336,40 +448,123 @@
           </button>
         </div>
 
-        <!-- FORMULARIO DE ALTA -->
+        <!-- FORMULARIO DE ALTA EXTENDIDO -->
         <form id="formAltaSocio" style="display: none; background:#f4f9f4; padding:15px; border-radius:12px; border:1px solid #c8e6c9; margin-top:15px;">
           <h3 style="font-size:1.1rem; color:var(--primary-color); margin-bottom:12px;">Formulario de Registro</h3>
           
           <div class="form-group">
             <label for="aliasSocio">Alias / Nombre corto (*):</label>
-            <input type="text" id="aliasSocio" required placeholder="Ej. AniMontaña (Como quieres que te llamemos)">
+            <input type="text" id="aliasSocio" required placeholder="Ej. AniMontaña">
           </div>
           <div class="form-group">
             <label for="nombreSocio">Nombre Completo (*):</label>
             <input type="text" id="nombreSocio" required placeholder="Ej. Ana García Pérez">
           </div>
           <div class="form-group">
+            <label for="dniSocio">DNI / NIE (*):</label>
+            <input type="text" id="dniSocio" required placeholder="12345678X">
+          </div>
+          <div class="form-group">
             <label for="emailSocio">Correo Electrónico (*):</label>
             <input type="email" id="emailSocio" required placeholder="ejemplo@correo.com">
           </div>
           <div class="form-group">
-            <label for="telSocio">Teléfono de Contacto (*):</label>
+            <label for="telSocio">Teléfono Móvil (*):</label>
             <input type="tel" id="telSocio" required placeholder="600000000">
           </div>
+          <div class="form-group">
+            <label for="dirSocio">Dirección (*):</label>
+            <input type="text" id="dirSocio" required placeholder="C/ Ejemplo, 12, 1ºA">
+          </div>
+          <div style="display:flex; gap:10px;">
+            <div class="form-group" style="flex:1;">
+              <label for="cpSocio">CP (*):</label>
+              <input type="text" id="cpSocio" required placeholder="28001">
+            </div>
+            <div class="form-group" style="flex:2;">
+              <label for="pobSocio">Población (*):</label>
+              <input type="text" id="pobSocio" required placeholder="Madrid">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="nacSocio">Fecha Nacimiento (*):</label>
+            <input type="date" id="nacSocio" required>
+          </div>
+          <div class="form-group">
+            <label for="alergiasSocio">Alergias / Observaciones Médicas:</label>
+            <input type="text" id="alergiasSocio" placeholder="Ninguna, gluten, etc.">
+          </div>
 
+          <div style="display:flex; gap:10px;">
+            <div class="form-group" style="flex:1;">
+              <label for="talla1Socio">Talla Camiseta:</label>
+              <select id="talla1Socio">
+                <option value="M">M</option>
+                <option value="XS">XS</option>
+                <option value="S">S</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+                <option value="XXL">XXL</option>
+              </select>
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label for="talla2Socio">Talla Prenda 2:</label>
+              <select id="talla2Socio">
+                <option value="M">M</option>
+                <option value="XS">XS</option>
+                <option value="S">S</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+                <option value="XXL">XXL</option>
+              </select>
+            </div>
+          </div>
+
+          <hr style="margin:12px 0; border:0; border-top:1px solid #c8e6c9;">
+          <h4 style="font-size:0.9rem; color:#2e7d32; margin-bottom:8px;">🚨 Contacto Urgencia</h4>
+          <div class="form-group">
+            <label for="contUrgSocio">Nombre Contacto:</label>
+            <input type="text" id="contUrgSocio" placeholder="Familiar o amigo">
+          </div>
+          <div class="form-group">
+            <label for="telUrgSocio">Teléfono Urgencia:</label>
+            <input type="tel" id="telUrgSocio" placeholder="600000000">
+          </div>
+
+          <hr style="margin:12px 0; border:0; border-top:1px solid #c8e6c9;">
           <div class="form-group" style="background:#fff; padding:10px; border-radius:8px; border:1px solid #ddd;">
-            <label style="margin-bottom:8px; color:var(--primary-color);">📧 Boletín de Noticias por Correo:</label>
-            <div style="display:flex; align-items:center; gap:10px; font-size:0.9rem;">
-              <input type="checkbox" id="checkActivarNews" style="width:20px; height:20px; accent-color:var(--primary-color);" checked>
-              <label for="checkActivarNews" style="margin-bottom:0; font-weight:normal; cursor:pointer;">
-                Deseo recibir las novedades diarias del club en mi email
-              </label>
+            <label style="margin-bottom:8px; color:var(--primary-color);">📧 Boletín Diario:</label>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <input type="checkbox" id="checkActivarNews" style="width:20px; height:20px;" checked>
+              <label for="checkActivarNews" style="margin-bottom:0; font-weight:normal;">Deseo recibir boletín diario</label>
             </div>
           </div>
 
           <div class="form-group">
-            <label for="comentariosSocio">Comentarios / Observaciones:</label>
-            <textarea id="comentariosSocio" rows="3" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem;" placeholder="¿Dudas, experiencia en montaña, si estás federado/a...?"></textarea>
+            <label for="autoBBDDSocio">Autorización BBDD (*):</label>
+            <select id="autoBBDDSocio">
+              <option value="SI">SI</option>
+              <option value="NO">NO</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="autoImagenSocio">Autorización Imagen (*):</label>
+            <select id="autoImagenSocio">
+              <option value="SI">SI</option>
+              <option value="NO">NO</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="reglamentoSocio">Acepto Reglamento (*):</label>
+            <select id="reglamentoSocio">
+              <option value="SI">SI</option>
+              <option value="NO">NO</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="comentariosSocio">Comentarios:</label>
+            <textarea id="comentariosSocio" rows="2" placeholder="Experiencia, dudas..."></textarea>
           </div>
           <button type="submit" class="btn-submit" id="btnAlta">Enviar Solicitud de Alta</button>
         </form>
@@ -388,7 +583,7 @@
         </div>
       </div>
 
-      <!-- SECCIÓN 4: NUESTRA HISTORIA (DINÁMICA) -->
+      <!-- SECCIÓN 4: NUESTRA HISTORIA -->
       <div id="pantallaHistoria" style="display: none;">
         <button class="btn-volver" onclick="volverAlMenu()">← Volver al Menú</button>
         <div style="background:#f9f9f9; padding:15px; border-radius:12px; border-left:5px solid var(--primary-color);">
@@ -417,13 +612,11 @@
           
           <div id="carreraLinksContainer" style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;"></div>
 
-          <!-- LISTA DE SOCIOS QUE VAN -->
           <div style="background:#fff; padding:12px; border-radius:8px; border:1px solid #ddd; margin-bottom:15px;">
             <h4 style="font-size:0.95rem; color:var(--primary-color); margin-bottom:8px;">👥 Socios del Club apuntados:</h4>
             <ul id="listaSociosInscritos" style="list-style:none; padding-left:0; font-size:0.9rem; color:#444;"></ul>
           </div>
 
-          <!-- FORMULARIO DE INSCRIPCIÓN EN LA APP -->
           <div style="background:#e8f5e9; padding:12px; border-radius:8px; border:1px solid #c8e6c9;">
             <label for="selectSocioCarrera" style="font-size:0.85rem; font-weight:bold; color:#2e7d32; margin-bottom:5px;">¿Vas a ir a esta carrera? ¡Apúntate!</label>
             <select id="selectSocioCarrera" style="width:100%; padding:10px; border-radius:6px; border:1px solid #a5d6a7; margin-bottom:10px;">
@@ -460,6 +653,7 @@
       } else if (seccion === 'socio') {
         document.getElementById('pantallaSocio').style.display = 'block';
         document.getElementById('formAltaSocio').style.display = 'none';
+        document.getElementById('bloqueSociosActivos').style.display = 'none';
       } else if (seccion === 'challenge') {
         document.getElementById('pantallaChallenge').style.display = 'block';
       } else if (seccion === 'historia') {
@@ -493,7 +687,39 @@
       }
     }
 
-    // 1. INICIAR SESIÓN Y CARGAR PERFIL
+    // LISTADO DE SOCIOS ACTIVOS
+    async function toggleListadoSociosActivos() {
+      const bloque = document.getElementById('bloqueSociosActivos');
+      const contenedor = document.getElementById('contenedorListaSociosActivos');
+
+      if (bloque.style.display === 'none' || bloque.style.display === '') {
+        bloque.style.display = 'block';
+        contenedor.innerHTML = '<p style="font-size:0.85rem; color:#666;">⏳ Cargando socios activos...</p>';
+
+        try {
+          const res = await fetch(APPS_SCRIPT_URL);
+          const data = await res.json();
+
+          if (data.status === 'success' && data.socios) {
+            contenedor.innerHTML = '';
+            data.socios.forEach(s => {
+              const span = document.createElement('span');
+              span.className = 'badge-socio';
+              span.innerText = `🏃 ${s.nombre}`;
+              contenedor.appendChild(span);
+            });
+          } else {
+            contenedor.innerHTML = '<p style="font-size:0.85rem; color:#888;">No hay socios para mostrar.</p>';
+          }
+        } catch (err) {
+          contenedor.innerHTML = '<p style="font-size:0.85rem; color:red;">Error al cargar la lista.</p>';
+        }
+      } else {
+        bloque.style.display = 'none';
+      }
+    }
+
+    // 1. INICIAR SESIÓN Y CARGAR PERFIL COMPLETO (24 CAMPOS)
     async function iniciarSesionSocio() {
       const alias = document.getElementById('loginAlias').value.trim();
       const tel = document.getElementById('loginTel').value.trim();
@@ -522,11 +748,24 @@
           const s = data.socio;
           document.getElementById('editNumFila').value = s.numFila;
           document.getElementById('lblPerfilAlias').innerText = s.alias;
-          document.getElementById('editNombre').value = s.nombre;
-          document.getElementById('editEmail').value = s.email;
-          document.getElementById('editTel').value = s.telefono;
-          document.getElementById('editComentarios').value = s.comentarios;
+          document.getElementById('editNombre').value = s.nombre || "";
+          document.getElementById('editDNI').value = s.dni || "";
+          document.getElementById('editEmail').value = s.email || "";
+          document.getElementById('editTel').value = s.telefono || "";
+          document.getElementById('editDireccion').value = s.direccion || "";
+          document.getElementById('editCP').value = s.cp || "";
+          document.getElementById('editPoblacion').value = s.poblacion || "";
+          document.getElementById('editFechaNac').value = s.fechaNacimiento || "";
+          document.getElementById('editAlergias').value = s.alergias || "";
+          document.getElementById('editTalla1').value = s.tallaCamiseta || "M";
+          document.getElementById('editTalla2').value = s.tallaPrenda2 || "M";
+          document.getElementById('editContactoUrgencia').value = s.contactoUrgencia || "";
+          document.getElementById('editTelUrgencia').value = s.telUrgencia || "";
           document.getElementById('editCheckNews').checked = (s.activarNews === 'SI');
+          document.getElementById('editAutoBBDD').value = s.autoBBDD || "SI";
+          document.getElementById('editAutoImagen').value = s.autoImagen || "SI";
+          document.getElementById('editReglamento').value = s.aceptoReglamento || "SI";
+          document.getElementById('editComentarios').value = s.comentarios || "";
 
           document.getElementById('bloqueLoginSocio').style.display = 'none';
           document.getElementById('contenedorBotonAlta').style.display = 'none';
@@ -561,10 +800,23 @@
       bodyData.append('accion', 'actualizarSocio');
       bodyData.append('numFila', numFila);
       bodyData.append('nuevoSocio', document.getElementById('editNombre').value);
+      bodyData.append('dni', document.getElementById('editDNI').value);
       bodyData.append('email', document.getElementById('editEmail').value);
       bodyData.append('telefono', document.getElementById('editTel').value);
-      bodyData.append('comentarios', document.getElementById('editComentarios').value);
+      bodyData.append('direccion', document.getElementById('editDireccion').value);
+      bodyData.append('cp', document.getElementById('editCP').value);
+      bodyData.append('poblacion', document.getElementById('editPoblacion').value);
+      bodyData.append('fechaNacimiento', document.getElementById('editFechaNac').value);
+      bodyData.append('alergias', document.getElementById('editAlergias').value);
+      bodyData.append('tallaCamiseta', document.getElementById('editTalla1').value);
+      bodyData.append('tallaPrenda2', document.getElementById('editTalla2').value);
+      bodyData.append('contactoUrgencia', document.getElementById('editContactoUrgencia').value);
+      bodyData.append('telUrgencia', document.getElementById('editTelUrgencia').value);
       bodyData.append('activarNews', document.getElementById('editCheckNews').checked ? 'SI' : 'NO');
+      bodyData.append('autoBBDD', document.getElementById('editAutoBBDD').value);
+      bodyData.append('autoImagen', document.getElementById('editAutoImagen').value);
+      bodyData.append('aceptoReglamento', document.getElementById('editReglamento').value);
+      bodyData.append('comentarios', document.getElementById('editComentarios').value);
 
       try {
         const res = await fetch(APPS_SCRIPT_URL, {
@@ -710,6 +962,7 @@
         contenedor.innerHTML = '<p style="text-align:center; color:red;">Error al cargar las carreras.</p>';
       }
     }
+
     async function verDetalleCarrera(index) {
       const carrera = carrerasGuardadas[index];
       if (!carrera) return;
@@ -829,23 +1082,37 @@
       document.getElementById('pantallaCarreras').style.display = 'block';
     }
 
+    // REGISTRO DE NUEVO SOCIO (24 CAMPOS)
     document.getElementById('formAltaSocio').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('btnAlta');
       const status = document.getElementById('statusSocioMessage');
       const aliasInput = document.getElementById('aliasSocio');
-      const checkNews = document.getElementById('checkActivarNews');
 
       btn.disabled = true;
       btn.innerText = "Comprobando datos...";
 
       const datos = new URLSearchParams();
+      datos.append('accion', 'nuevoSocio');
       datos.append('alias', aliasInput.value.trim());
-      datos.append('nuevoSocio', document.getElementById('nombreSocio').value);
-      datos.append('email', document.getElementById('emailSocio').value);
-      datos.append('telefono', document.getElementById('telSocio').value);
-      datos.append('comentarios', document.getElementById('comentariosSocio').value);
-      datos.append('activarNews', checkNews.checked ? 'SI' : 'NO');
+      datos.append('nuevoSocio', document.getElementById('nombreSocio').value.trim());
+      datos.append('dni', document.getElementById('dniSocio').value.trim());
+      datos.append('email', document.getElementById('emailSocio').value.trim());
+      datos.append('telefono', document.getElementById('telSocio').value.trim());
+      datos.append('direccion', document.getElementById('dirSocio').value.trim());
+      datos.append('cp', document.getElementById('cpSocio').value.trim());
+      datos.append('poblacion', document.getElementById('pobSocio').value.trim());
+      datos.append('fechaNacimiento', document.getElementById('nacSocio').value);
+      datos.append('alergias', document.getElementById('alergiasSocio').value.trim());
+      datos.append('tallaCamiseta', document.getElementById('talla1Socio').value);
+      datos.append('tallaPrenda2', document.getElementById('talla2Socio').value);
+      datos.append('contactoUrgencia', document.getElementById('contUrgSocio').value.trim());
+      datos.append('telUrgencia', document.getElementById('telUrgSocio').value.trim());
+      datos.append('activarNews', document.getElementById('checkActivarNews').checked ? 'SI' : 'NO');
+      datos.append('autoBBDD', document.getElementById('autoBBDDSocio').value);
+      datos.append('autoImagen', document.getElementById('autoImagenSocio').value);
+      datos.append('aceptoReglamento', document.getElementById('reglamentoSocio').value);
+      datos.append('comentarios', document.getElementById('comentariosSocio').value.trim());
 
       try {
         const response = await fetch(APPS_SCRIPT_URL, {
@@ -864,11 +1131,9 @@
           status.style.padding = '12px';
           status.style.borderRadius = '8px';
           status.style.marginTop = '15px';
-          status.style.boxShadow = '0 4px 10px rgba(211,47,47,0.3)';
           status.innerText = "⚠️ ATENCIÓN: El Alias '" + aliasInput.value + "' ya está registrado por otro socio.\nPor favor, elige un Alias diferente.";
 
           aliasInput.style.border = '2px solid #d32f2f';
-          aliasInput.style.background = '#ffebee';
           aliasInput.focus();
           
           btn.disabled = false;
@@ -878,13 +1143,11 @@
 
         if (resultado.status === 'success') {
           aliasInput.style.border = '1px solid #ccc';
-          aliasInput.style.background = '#ffffff';
 
           status.style.display = 'block';
           status.style.background = '#2e7d32';
           status.style.color = '#ffffff';
           status.style.fontWeight = 'bold';
-          status.style.fontSize = '1.05rem';
           status.style.padding = '12px';
           status.style.borderRadius = '8px';
           status.style.marginTop = '15px';

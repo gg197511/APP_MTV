@@ -720,35 +720,40 @@
     }
 
     // FUNCIÓN AUXILIAR: Convierte cualquier fecha a formato HTML5 (AAAA-MM-DD)
-    function formatearFechaISO(fechaRaw) {
-      if (!fechaRaw) return "";
-      let str = fechaRaw.toString().trim();
+    // Función blindada mediante Expresiones Regulares para aislar solo AAAA-MM-DD
+	function formatearFechaISO(fechaRaw) {
+ 	 if (!fechaRaw) return "";
+ 	 let str = fechaRaw.toString().trim();
 
-      // 1. Si ya viene en formato AAAA-MM-DD
-      if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
-        return str.substring(0, 10);
-      }
+ 	 // 1. Si viene en formato español DD/MM/AAAA (ej. "20/05/1985" o "20/05/1985 00:00:00")
+ 	 let matchEs = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+ 	 if (matchEs) {
+ 	   let dia = matchEs[1].padStart(2, '0');
+ 	   let mes = matchEs[2].padStart(2, '0');
+  	  let ano = matchEs[3];
+ 	   return `${ano}-${mes}-${dia}`;
+	  }
 
-      // 2. Si viene en formato español DD/MM/AAAA
-      if (/^\d{1,2}\/\d{1,2}\/\d{4}/.test(str)) {
-        let partes = str.split('/');
-        let dia = partes[0].padStart(2, '0');
-        let mes = partes[1].padStart(2, '0');
-        let ano = partes[2];
-        return `${ano}-${mes}-${dia}`;
-      }
+	  // 2. Si viene en formato ISO AAAA-MM-DD (ej. "1985-05-20" o "1985-05-20T00:00:00.000Z")
+	  let matchIso = str.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+ 	 if (matchIso) {
+  	  let ano = matchIso[1];
+ 	   let mes = matchIso[2].padStart(2, '0');
+ 	   let dia = matchIso[3].padStart(2, '0');
+  	  return `${ano}-${mes}-${dia}`;
+  	}
 
-      // 3. Si viene como objeto Date o texto amplio ("Mon May 20 1985...")
-      let d = new Date(str);
-      if (!isNaN(d.getTime())) {
-        let ano = d.getFullYear();
-        let mes = String(d.getMonth() + 1).padStart(2, '0');
-        let dia = String(d.getDate()).padStart(2, '0');
-        return `${ano}-${mes}-${dia}`;
-      }
+ 	 // 3. Objeto Date en texto amplio ("Mon May 20 1985...")
+ 	 let d = new Date(str);
+	  if (!isNaN(d.getTime())) {
+ 	   let ano = d.getFullYear();
+ 	   let mes = String(d.getMonth() + 1).padStart(2, '0');
+  	  let dia = String(d.getDate()).padStart(2, '0');
+  	  return `${ano}-${mes}-${dia}`;
+ 	 }
 
-      return "";
-    }
+ 	 return "";
+	}
 
     // 1. INICIAR SESIÓN Y CARGAR PERFIL COMPLETO (24 CAMPOS)
     async function iniciarSesionSocio() {

@@ -613,7 +613,7 @@
         </div>
       </div>
 
-      <!-- SECCIÓN 5: CARRERAS Y SALIDAS DE CLUB (CALENDARIO POR SEMANAS DEL AÑO) -->
+      <!-- SECCIÓN 5: CARRERAS Y SALIDAS DE CLUB (CALENDARIO SIMPLIFICADO Y CON BORDES DEFINIDOS) -->
       <div id="pantallaCarreras" style="display: none;">
         
         <!-- BARRA DE NAVEGACIÓN SUPERIOR CON DOS BOTONES EN PARALELO -->
@@ -622,10 +622,9 @@
           <button class="btn-volver" onclick="toggleVistaCalendario()" id="btnToggleCalendario">📅 Ver Calendario</button>
         </div>
 
-        <!-- BLOQUE CALENDARIO VISUAL CON FORMATO "SEMANA XX" -->
-        <div id="bloqueCalendarioFinesSemana" style="display: none; background: #f0f7f0; padding: 12px; border-radius: 12px; border: 1px solid #a5d6a7; margin-bottom: 20px;">
-          <h3 style="font-size: 1.05rem; color: var(--primary-color); margin-bottom: 4px; text-align: center;">📅 Calendario Próximos 4 Fines de Semana</h3>
-          <p style="font-size: 0.8rem; color: #666; margin-bottom: 12px; text-align: center;">Salidas y carreras clasificadas por número de semana:</p>
+        <!-- BLOQUE CALENDARIO SIMPLIFICADO -->
+        <div id="bloqueCalendarioFinesSemana" style="display: none; background: #f0f7f0; padding: 12px; border-radius: 12px; border: 2px solid var(--primary-color); margin-bottom: 20px;">
+          <h3 style="font-size: 1.15rem; color: var(--primary-color); margin-bottom: 12px; text-align: center; font-weight: 800; letter-spacing: 1px;">CALENDARIO</h3>
           <div id="contenedorFinesSemana"></div>
         </div>
 
@@ -1064,7 +1063,7 @@
       }
     }
 
-    // CALENDARIO: ALTERNAR VISIBILIDAD DE LOS PRÓXIMOS 4 FINES DE SEMANA
+    // CALENDARIO: ALTERNAR VISIBILIDAD
     function toggleVistaCalendario() {
       const bloque = document.getElementById('bloqueCalendarioFinesSemana');
       const btn = document.getElementById('btnToggleCalendario');
@@ -1079,7 +1078,7 @@
       }
     }
 
-    // CALENDARIO: ALGORITMO CÁLCULO DE LOS PRÓXIMOS 4 FINES DE SEMANA
+    // CALENDARIO: CÁLCULO DE LOS PRÓXIMOS FINES DE SEMANA
     function obtenerProximosFinesDeSemana() {
       let finesDeSemana = [];
       let hoy = new Date();
@@ -1101,7 +1100,7 @@
       return finesDeSemana;
     }
 
-    // CALENDARIO VISUAL: RENDERIZADO CON ETANQUETA "SEMANA XX"
+    // CALENDARIO VISUAL: CASILLAS BIEN DEFINIDAS Y TÍTULO UNIFICADO
     function renderizarCalendarioProximosWeekends() {
       const contenedor = document.getElementById('contenedorFinesSemana');
       const fines = obtenerProximosFinesDeSemana();
@@ -1115,46 +1114,44 @@
         const sabISO = formatearFechaISO(f.sabado);
         const domISO = formatearFechaISO(f.domingo);
 
-        // Obtener número de semana ISO del año
         const numSemana = obtenerNumeroSemana(f.sabado);
 
-        // Filtrar carreras para Sábado y Domingo por separado
         const eventosSabado = carrerasGuardadas.filter(c => formatearFechaISO(c.fecha) === sabISO);
         const eventosDomingo = carrerasGuardadas.filter(c => formatearFechaISO(c.fecha) === domISO);
 
         const cardFinde = document.createElement('div');
-        cardFinde.style.cssText = "background:#ffffff; border:1px solid #c8e6c9; border-radius:10px; padding:12px; margin-bottom:12px; box-shadow:0 2px 6px rgba(0,0,0,0.04);";
+        cardFinde.style.cssText = "background:#ffffff; border:2px solid #2e7d32; border-radius:10px; padding:12px; margin-bottom:12px; box-shadow:0 3px 8px rgba(0,0,0,0.08);";
 
         // Renderizado Casillas Sábado
         let htmlSab = eventosSabado.length > 0 ? eventosSabado.map(ev => `
-          <div style="margin-top:6px; padding:6px 8px; background:#e8f5e9; border-left:3px solid var(--primary-color); border-radius:4px; font-size:0.8rem;">
+          <div style="margin-top:6px; padding:6px 8px; background:#e8f5e9; border-left:4px solid var(--primary-color); border-radius:4px; font-size:0.8rem;">
             <div style="font-weight:bold; color:var(--dark-color); line-height:1.2;">🏃 ${ev.nombre}</div>
             <div style="color:#d32f2f; font-weight:bold; font-size:0.75rem; margin-top:4px;">👥 ${ev.totalInscritos || 0} ap.</div>
           </div>
-        `).join('') : '<p style="font-size:0.75rem; color:#aaa; margin-top:6px; font-style:italic;">Libre</p>';
+        `).join('') : '<p style="font-size:0.75rem; color:#888; margin-top:6px; font-style:italic;">Libre</p>';
 
         // Renderizado Casillas Domingo
         let htmlDom = eventosDomingo.length > 0 ? eventosDomingo.map(ev => `
-          <div style="margin-top:6px; padding:6px 8px; background:#e8f5e9; border-left:3px solid var(--primary-color); border-radius:4px; font-size:0.8rem;">
+          <div style="margin-top:6px; padding:6px 8px; background:#e8f5e9; border-left:4px solid var(--primary-color); border-radius:4px; font-size:0.8rem;">
             <div style="font-weight:bold; color:var(--dark-color); line-height:1.2;">🏃 ${ev.nombre}</div>
             <div style="color:#d32f2f; font-weight:bold; font-size:0.75rem; margin-top:4px;">👥 ${ev.totalInscritos || 0} ap.</div>
           </div>
-        `).join('') : '<p style="font-size:0.75rem; color:#aaa; margin-top:6px; font-style:italic;">Libre</p>';
+        `).join('') : '<p style="font-size:0.75rem; color:#888; margin-top:6px; font-style:italic;">Libre</p>';
 
-        // Estructura con Título "SEMANA XX"
+        // Estructura con casillas delimitadas por bordes oscuros (#333333)
         cardFinde.innerHTML = `
-          <div style="font-weight:800; font-size:0.9rem; color:var(--primary-color); border-bottom:2px solid #e8f5e9; padding-bottom:4px; margin-bottom:8px; text-align:center; letter-spacing:0.5px;">
+          <div style="font-weight:800; font-size:0.88rem; color:var(--primary-color); border-bottom:2px solid #c8e6c9; padding-bottom:4px; margin-bottom:8px; text-align:center; letter-spacing:0.5px;">
             🗓️ SEMANA ${numSemana}
           </div>
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <div style="background:#f9f9f9; border:1px solid #e0e0e0; border-radius:8px; padding:8px;">
-              <div style="font-size:0.78rem; font-weight:bold; color:#2e7d32; border-bottom:1px dashed #ccc; padding-bottom:3px;">
+            <div style="background:#ffffff; border:2px solid #333333; border-radius:8px; padding:8px;">
+              <div style="font-size:0.78rem; font-weight:bold; color:#2e7d32; border-bottom:1px solid #ddd; padding-bottom:3px;">
                 Sábado ${sabStr}
               </div>
               ${htmlSab}
             </div>
-            <div style="background:#f9f9f9; border:1px solid #e0e0e0; border-radius:8px; padding:8px;">
-              <div style="font-size:0.78rem; font-weight:bold; color:#1b5e20; border-bottom:1px dashed #ccc; padding-bottom:3px;">
+            <div style="background:#ffffff; border:2px solid #333333; border-radius:8px; padding:8px;">
+              <div style="font-size:0.78rem; font-weight:bold; color:#1b5e20; border-bottom:1px solid #ddd; padding-bottom:3px;">
                 Domingo ${domStr}
               </div>
               ${htmlDom}

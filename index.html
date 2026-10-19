@@ -1288,4 +1288,120 @@
     document.getElementById('formAltaSocio').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('btnAlta');
-      const status = document.getElementById('statusSocioMessage
+      const status = document.getElementById('statusSocioMessage');
+      const aliasInput = document.getElementById('aliasSocio');
+
+      btn.disabled = true;
+      btn.innerText = "Comprobando datos...";
+
+      const datos = new URLSearchParams();
+      datos.append('accion', 'nuevoSocio');
+      datos.append('alias', aliasInput.value.trim());
+      datos.append('nuevoSocio', document.getElementById('nombreSocio').value.trim());
+      datos.append('dni', document.getElementById('dniSocio').value.trim());
+      datos.append('email', document.getElementById('emailSocio').value.trim());
+      datos.append('telefono', document.getElementById('telSocio').value.trim());
+      datos.append('direccion', document.getElementById('dirSocio').value.trim());
+      datos.append('cp', document.getElementById('cpSocio').value.trim());
+      datos.append('poblacion', document.getElementById('pobSocio').value.trim());
+      datos.append('fechaNacimiento', document.getElementById('nacSocio').value);
+      datos.append('alergias', document.getElementById('alergiasSocio').value.trim());
+      datos.append('tallaCamiseta', document.getElementById('talla1Socio').value);
+      datos.append('tallaPrenda2', document.getElementById('talla2Socio').value);
+      datos.append('contactoUrgencia', document.getElementById('contUrgSocio').value.trim());
+      datos.append('telUrgencia', document.getElementById('telUrgSocio').value.trim());
+      datos.append('activarNews', document.getElementById('checkActivarNews').checked ? 'SI' : 'NO');
+      datos.append('autoBBDD', document.getElementById('autoBBDDSocio').value);
+      datos.append('autoImagen', document.getElementById('autoImagenSocio').value);
+      datos.append('aceptoReglamento', document.getElementById('reglamentoSocio').value);
+      datos.append('comentarios', document.getElementById('comentariosSocio').value.trim());
+
+      try {
+        const response = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: datos.toString()
+        });
+
+        const resultado = await response.json();
+
+        if (resultado.status === 'error_alias') {
+          status.style.display = 'block';
+          status.style.background = '#d32f2f';
+          status.style.color = '#ffffff';
+          status.style.fontWeight = 'bold';
+          status.style.padding = '12px';
+          status.style.borderRadius = '8px';
+          status.style.marginTop = '15px';
+          status.innerText = "⚠️ ATENCIÓN: El Alias '" + aliasInput.value + "' ya está registrado por otro socio.\nPor favor, elige un Alias diferente.";
+
+          aliasInput.style.border = '2px solid #d32f2f';
+          aliasInput.focus();
+          
+          btn.disabled = false;
+          btn.innerText = "Enviar Solicitud de Alta";
+          return;
+        }
+
+        if (resultado.status === 'success') {
+          aliasInput.style.border = '1px solid #ccc';
+
+          status.style.display = 'block';
+          status.style.background = '#2e7d32';
+          status.style.color = '#ffffff';
+          status.style.fontWeight = 'bold';
+          status.style.padding = '12px';
+          status.style.borderRadius = '8px';
+          status.style.marginTop = '15px';
+          status.innerText = "¡ALTA DE NUEVO SOCIO CORRECTA! ✅\nBienvenido/a al Club de Montaña MTV.";
+
+          document.getElementById('formAltaSocio').reset();
+
+          setTimeout(() => {
+            status.style.display = 'none';
+            volverAlMenu();
+          }, 3000);
+        }
+
+      } catch (err) {
+        status.style.display = 'block';
+        status.style.background = '#2e7d32';
+        status.style.color = '#ffffff';
+        status.innerText = "¡ALTA ENVIADA CORRECTAMENTE! ✅";
+        document.getElementById('formAltaSocio').reset();
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Enviar Solicitud de Alta";
+      }
+    });
+
+    async function cargarHistoria() {
+      const titulo = document.getElementById('historiaTitulo');
+      const texto = document.getElementById('historiaTexto');
+      const contacto = document.getElementById('historiaContacto');
+
+      try {
+        const res = await fetch(`${APPS_SCRIPT_URL}?tipo=historia`);
+        const data = await res.json();
+
+        if (data.status === 'success' && data.historia) {
+          titulo.innerText = data.historia.titulo;
+          texto.innerText = data.historia.texto;
+          contacto.innerHTML = data.historia.contacto ? `📍 <strong>Contacto & Sede:</strong><br>${data.historia.contacto}` : '';
+        }
+      } catch (err) {
+        titulo.innerText = "Nuestra Historia";
+        texto.innerText = "Error al cargar la información desde la base de datos.";
+      }
+    }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('Service Worker registrado con éxito', reg))
+          .catch(err => console.log('Error al registrar Service Worker', err));
+      });
+    }
+  </script>
+</body>
+</html>

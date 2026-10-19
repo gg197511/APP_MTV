@@ -613,7 +613,7 @@
         </div>
       </div>
 
-      <!-- SECCIÓN 5: CARRERAS Y SALIDAS DE CLUB (CON CALENDARIO VISUAL 2 COLUMNAS) -->
+      <!-- SECCIÓN 5: CARRERAS Y SALIDAS DE CLUB (CALENDARIO POR SEMANAS DEL AÑO) -->
       <div id="pantallaCarreras" style="display: none;">
         
         <!-- BARRA DE NAVEGACIÓN SUPERIOR CON DOS BOTONES EN PARALELO -->
@@ -622,10 +622,10 @@
           <button class="btn-volver" onclick="toggleVistaCalendario()" id="btnToggleCalendario">📅 Ver Calendario</button>
         </div>
 
-        <!-- BLOQUE CALENDARIO VISUAL EN DOS COLUMNAS (SÁBADO Y DOMINGO) -->
+        <!-- BLOQUE CALENDARIO VISUAL CON FORMATO "SEMANA XX" -->
         <div id="bloqueCalendarioFinesSemana" style="display: none; background: #f0f7f0; padding: 12px; border-radius: 12px; border: 1px solid #a5d6a7; margin-bottom: 20px;">
           <h3 style="font-size: 1.05rem; color: var(--primary-color); margin-bottom: 4px; text-align: center;">📅 Calendario Próximos 4 Fines de Semana</h3>
-          <p style="font-size: 0.8rem; color: #666; margin-bottom: 12px; text-align: center;">Compara visualmente las salidas y carreras de Sábado y Domingo:</p>
+          <p style="font-size: 0.8rem; color: #666; margin-bottom: 12px; text-align: center;">Salidas y carreras clasificadas por número de semana:</p>
           <div id="contenedorFinesSemana"></div>
         </div>
 
@@ -772,7 +772,7 @@
       }
     }
 
-    // FUNCIÓN AUXILIAR: Normalizar fechas a ISO (AAAA-MM-DD)
+    // FUNCIÓN AUXILIAR 1: Normalizar fechas a ISO (AAAA-MM-DD)
     function formatearFechaISO(fechaRaw) {
       if (!fechaRaw) return "";
       let str = fechaRaw.toString().trim();
@@ -802,6 +802,20 @@
       }
 
       return "";
+    }
+
+    // FUNCIÓN AUXILIAR 2: Calcular el Número de Semana del Año (Estándar ISO-8601)
+    function obtenerNumeroSemana(fecha) {
+      let tempDate = new Date(fecha.valueOf());
+      let dayNum = (fecha.getDay() + 6) % 7; // Lunes = 0, Domingo = 6
+      tempDate.setDate(tempDate.getDate() - dayNum + 3); // Jueves más cercano
+      let firstThursday = tempDate.valueOf();
+      tempDate.setMonth(0, 1);
+      if (tempDate.getDay() !== 4) {
+        tempDate.setMonth(0, 1 + ((4 - tempDate.getDay() + 7) % 7));
+      }
+      let weekNum = 1 + Math.round((firstThursday - tempDate.valueOf()) / 604800000);
+      return String(weekNum).padStart(2, '0');
     }
 
     // 1. INICIAR SESIÓN Y CARGAR PERFIL COMPLETO
@@ -1087,19 +1101,22 @@
       return finesDeSemana;
     }
 
-    // CALENDARIO VISUAL: RENDERIZADO EN 2 COLUMNAS (SÁBADO | DOMINGO) CON CASILLAS
+    // CALENDARIO VISUAL: RENDERIZADO CON ETANQUETA "SEMANA XX"
     function renderizarCalendarioProximosWeekends() {
       const contenedor = document.getElementById('contenedorFinesSemana');
       const fines = obtenerProximosFinesDeSemana();
       contenedor.innerHTML = '';
 
-      fines.forEach((f, index) => {
+      fines.forEach((f) => {
         const opciones = { day: 'numeric', month: 'short' };
         const sabStr = f.sabado.toLocaleDateString('es-ES', opciones);
         const domStr = f.domingo.toLocaleDateString('es-ES', opciones);
 
         const sabISO = formatearFechaISO(f.sabado);
         const domISO = formatearFechaISO(f.domingo);
+
+        // Obtener número de semana ISO del año
+        const numSemana = obtenerNumeroSemana(f.sabado);
 
         // Filtrar carreras para Sábado y Domingo por separado
         const eventosSabado = carrerasGuardadas.filter(c => formatearFechaISO(c.fecha) === sabISO);
@@ -1124,10 +1141,10 @@
           </div>
         `).join('') : '<p style="font-size:0.75rem; color:#aaa; margin-top:6px; font-style:italic;">Libre</p>';
 
-        // Estructura de Cuadrícula de 2 Columnas
+        // Estructura con Título "SEMANA XX"
         cardFinde.innerHTML = `
-          <div style="font-weight:bold; font-size:0.88rem; color:var(--primary-color); border-bottom:2px solid #e8f5e9; padding-bottom:4px; margin-bottom:8px; text-align:center;">
-            🗓️ Fin de Semana ${index + 1}
+          <div style="font-weight:800; font-size:0.9rem; color:var(--primary-color); border-bottom:2px solid #e8f5e9; padding-bottom:4px; margin-bottom:8px; text-align:center; letter-spacing:0.5px;">
+            🗓️ SEMANA ${numSemana}
           </div>
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
             <div style="background:#f9f9f9; border:1px solid #e0e0e0; border-radius:8px; padding:8px;">
@@ -1271,120 +1288,4 @@
     document.getElementById('formAltaSocio').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('btnAlta');
-      const status = document.getElementById('statusSocioMessage');
-      const aliasInput = document.getElementById('aliasSocio');
-
-      btn.disabled = true;
-      btn.innerText = "Comprobando datos...";
-
-      const datos = new URLSearchParams();
-      datos.append('accion', 'nuevoSocio');
-      datos.append('alias', aliasInput.value.trim());
-      datos.append('nuevoSocio', document.getElementById('nombreSocio').value.trim());
-      datos.append('dni', document.getElementById('dniSocio').value.trim());
-      datos.append('email', document.getElementById('emailSocio').value.trim());
-      datos.append('telefono', document.getElementById('telSocio').value.trim());
-      datos.append('direccion', document.getElementById('dirSocio').value.trim());
-      datos.append('cp', document.getElementById('cpSocio').value.trim());
-      datos.append('poblacion', document.getElementById('pobSocio').value.trim());
-      datos.append('fechaNacimiento', document.getElementById('nacSocio').value);
-      datos.append('alergias', document.getElementById('alergiasSocio').value.trim());
-      datos.append('tallaCamiseta', document.getElementById('talla1Socio').value);
-      datos.append('tallaPrenda2', document.getElementById('talla2Socio').value);
-      datos.append('contactoUrgencia', document.getElementById('contUrgSocio').value.trim());
-      datos.append('telUrgencia', document.getElementById('telUrgSocio').value.trim());
-      datos.append('activarNews', document.getElementById('checkActivarNews').checked ? 'SI' : 'NO');
-      datos.append('autoBBDD', document.getElementById('autoBBDDSocio').value);
-      datos.append('autoImagen', document.getElementById('autoImagenSocio').value);
-      datos.append('aceptoReglamento', document.getElementById('reglamentoSocio').value);
-      datos.append('comentarios', document.getElementById('comentariosSocio').value.trim());
-
-      try {
-        const response = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: datos.toString()
-        });
-
-        const resultado = await response.json();
-
-        if (resultado.status === 'error_alias') {
-          status.style.display = 'block';
-          status.style.background = '#d32f2f';
-          status.style.color = '#ffffff';
-          status.style.fontWeight = 'bold';
-          status.style.padding = '12px';
-          status.style.borderRadius = '8px';
-          status.style.marginTop = '15px';
-          status.innerText = "⚠️ ATENCIÓN: El Alias '" + aliasInput.value + "' ya está registrado por otro socio.\nPor favor, elige un Alias diferente.";
-
-          aliasInput.style.border = '2px solid #d32f2f';
-          aliasInput.focus();
-          
-          btn.disabled = false;
-          btn.innerText = "Enviar Solicitud de Alta";
-          return;
-        }
-
-        if (resultado.status === 'success') {
-          aliasInput.style.border = '1px solid #ccc';
-
-          status.style.display = 'block';
-          status.style.background = '#2e7d32';
-          status.style.color = '#ffffff';
-          status.style.fontWeight = 'bold';
-          status.style.padding = '12px';
-          status.style.borderRadius = '8px';
-          status.style.marginTop = '15px';
-          status.innerText = "¡ALTA DE NUEVO SOCIO CORRECTA! ✅\nBienvenido/a al Club de Montaña MTV.";
-
-          document.getElementById('formAltaSocio').reset();
-
-          setTimeout(() => {
-            status.style.display = 'none';
-            volverAlMenu();
-          }, 3000);
-        }
-
-      } catch (err) {
-        status.style.display = 'block';
-        status.style.background = '#2e7d32';
-        status.style.color = '#ffffff';
-        status.innerText = "¡ALTA ENVIADA CORRECTAMENTE! ✅";
-        document.getElementById('formAltaSocio').reset();
-      } finally {
-        btn.disabled = false;
-        btn.innerText = "Enviar Solicitud de Alta";
-      }
-    });
-
-    async function cargarHistoria() {
-      const titulo = document.getElementById('historiaTitulo');
-      const texto = document.getElementById('historiaTexto');
-      const contacto = document.getElementById('historiaContacto');
-
-      try {
-        const res = await fetch(`${APPS_SCRIPT_URL}?tipo=historia`);
-        const data = await res.json();
-
-        if (data.status === 'success' && data.historia) {
-          titulo.innerText = data.historia.titulo;
-          texto.innerText = data.historia.texto;
-          contacto.innerHTML = data.historia.contacto ? `📍 <strong>Contacto & Sede:</strong><br>${data.historia.contacto}` : '';
-        }
-      } catch (err) {
-        titulo.innerText = "Nuestra Historia";
-        texto.innerText = "Error al cargar la información desde la base de datos.";
-      }
-    }
-
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('Service Worker registrado con éxito', reg))
-          .catch(err => console.log('Error al registrar Service Worker', err));
-      });
-    }
-  </script>
-</body>
-</html>
+      const status = document.getElementById('statusSocioMessage

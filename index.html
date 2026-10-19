@@ -75,7 +75,7 @@
       padding: 20px;
     }
 
-    /* GRID DE BOTONES GRANDES (MENÚ MOSAICO) */
+    /* GRID DE BOTONES GRANDES (MENÚ MOSAICO 2 COLUMNAS) */
     .menu-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -134,7 +134,7 @@
       line-height: 1.2;
     }
 
-    /* BOTÓN DE RETORNO */
+    /* BOTÓN DE RETORNO Y NAVEGACIÓN SECUNDARIA */
     .btn-volver {
       background: #f0f0f0;
       border: none;
@@ -148,6 +148,18 @@
       align-items: center;
       gap: 5px;
       font-size: 0.85rem;
+    }
+
+    /* BARRA SUPERIOR FLEXIBLE CON DOS BOTONES */
+    .top-nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .top-nav-bar .btn-volver {
+      margin-bottom: 0; /* Anula el margen inferior para alineación exacta */
     }
 
     /* TARJETAS DE NOTICIAS, CARRERAS Y FORMULARIOS */
@@ -195,7 +207,7 @@
 <body>
 
   <div class="main-container">
-    <!-- BANNER DE CABECERA (Cabecera.jpg) -->
+    <!-- BANNER DE CABECERA -->
     <div class="hero-banner">
       <h1 id="tituloCabecera">Club de Trail MTV</h1>
       <p id="subtituloCabecera">Pasión por la naturaleza y la aventura</p>
@@ -203,10 +215,10 @@
 
     <div class="content-area">
       
-      <!-- PANTALLA PRINCIPAL: GRID DE BOTONES GRANDES -->
+      <!-- PANTALLA PRINCIPAL: GRID DE 6 BOTONES GRANDES -->
       <div id="pantallaMenuGrid" class="menu-grid">
         
-        <!-- Botón 1: Noticias (News.jpg) -->
+        <!-- Botón 1: Noticias -->
         <button class="grid-btn" onclick="abrirSeccion('noticias')">
           <div class="grid-btn-bg" style="background-image: url('News.jpg');"></div>
           <div class="grid-btn-overlay"></div>
@@ -216,7 +228,7 @@
           </div>
         </button>
 
-        <!-- Botón 2: Socios (Socios.jpg) -->
+        <!-- Botón 2: Socios -->
         <button class="grid-btn" onclick="abrirSeccion('socio')">
           <div class="grid-btn-bg" style="background-image: url('Socios.jpg');"></div>
           <div class="grid-btn-overlay"></div>
@@ -226,7 +238,7 @@
           </div>
         </button>
 
-        <!-- Botón 3: Challenge (Challenge.jpg) -->
+        <!-- Botón 3: Challenge -->
         <button class="grid-btn" onclick="abrirSeccion('challenge')">
           <div class="grid-btn-bg" style="background-image: url('Challenge.jpg');"></div>
           <div class="grid-btn-overlay"></div>
@@ -236,7 +248,7 @@
           </div>
         </button>
 
-        <!-- Botón 4: Historia / El Club (Historia.jpg) -->
+        <!-- Botón 4: Historia -->
         <button class="grid-btn" onclick="abrirSeccion('historia')">
           <div class="grid-btn-bg" style="background-image: url('Historia.jpg');"></div>
           <div class="grid-btn-overlay"></div>
@@ -246,13 +258,23 @@
           </div>
         </button>
 
-        <!-- Botón 5: Carreras de la Zona (Carreras.jpg) -->
+        <!-- Botón 5: Carreras y Salidas de Club (NOMBRE ACTUALIZADO) -->
         <button class="grid-btn" onclick="abrirSeccion('carreras')">
           <div class="grid-btn-bg" style="background-image: url('Carreras.jpg');"></div>
           <div class="grid-btn-overlay"></div>
           <div class="grid-btn-text">
             <span>🏃</span>
-            <h2>Carreras de la Zona</h2>
+            <h2>Carreras y Salidas de Club</h2>
+          </div>
+        </button>
+
+        <!-- Botón 6: EL RESCAT -->
+        <button class="grid-btn" onclick="abrirSeccion('rescat')">
+          <div class="grid-btn-bg" style="background-image: url('Rescat.jpg');"></div>
+          <div class="grid-btn-overlay"></div>
+          <div class="grid-btn-text">
+            <span>📜</span>
+            <h2>El Rescat 100 Donzelles</h2>
           </div>
         </button>
 
@@ -266,7 +288,7 @@
         </div>
       </div>
 
-      <!-- SECCIÓN 1.1: DETALLE DE NOTICIA COMPLETA -->
+      <!-- SECCIÓN 1.1: DETALLE DE NOTICIA -->
       <div id="pantallaDetalleNoticia" style="display: none;">
         <button class="btn-volver" onclick="volverANoticias()">← Volver a Noticias</button>
         <div class="noticia-detalle-card" style="background:#f9f9f9; padding:20px; border-radius:12px; border-left:5px solid var(--primary-color);">
@@ -277,16 +299,14 @@
         </div>
       </div>
 
-      <!-- SECCIÓN 2: SOCIOS (PANEL ACCESO + FORMULARIO ALTA + MI PERFIL + LISTA DE ACTIVOS) -->
+      <!-- SECCIÓN 2: SOCIOS -->
       <div id="pantallaSocio" style="display: none;">
         <button class="btn-volver" onclick="volverAlMenu()">← Volver al Menú</button>
         
-        <!-- BOTÓN PARA VER ALIAS DE SOCIOS ACTIVOS -->
         <button type="button" onclick="toggleListadoSociosActivos()" class="btn-submit" style="background:#455a64; margin-bottom:15px;">
           👥 Ver Listado de Socios Activos
         </button>
 
-        <!-- BLOQUE LISTADO DE SOCIOS ACTIVOS (INICIALMENTE OCULTO) -->
         <div id="bloqueSociosActivos" style="display:none; background:#f5f5f5; padding:15px; border-radius:12px; border:1px solid #ccc; margin-bottom:15px;">
           <h3 style="font-size:1rem; color:#37474f; margin-bottom:10px;">📋 Socios Activos del Club</h3>
           <div id="contenedorListaSociosActivos" style="display:flex; flex-wrap:wrap; gap:4px;">
@@ -294,7 +314,7 @@
           </div>
         </div>
 
-        <!-- A) PANEL DE ACCESO A SOCIOS REGISTRADOS -->
+        <!-- A) LOGIN -->
         <div id="bloqueLoginSocio" style="background:#f9f9f9; padding:18px; border-radius:12px; border:1px solid #e0e0e0; margin-bottom:20px;">
           <h3 style="font-size:1.1rem; color:var(--primary-color); margin-bottom:10px;">🔐 Acceso a mi Perfil</h3>
           <p style="font-size:0.85rem; color:#666; margin-bottom:15px;">Accede con tu Alias y tu teléfono móvil para consultar o modificar tus datos.</p>
@@ -311,7 +331,7 @@
           <div id="statusLoginMessage" style="margin-top:10px; font-size:0.85rem; text-align:center; display:none; padding:8px; border-radius:6px;"></div>
         </div>
 
-        <!-- B) VISTA DE EDICIÓN DE PERFIL DE SOCIO (24 CAMPOS EXTENDIDOS) -->
+        <!-- B) VISTA DE PERFIL -->
         <div id="bloquePerfilSocio" style="display:none; background:#e8f5e9; padding:18px; border-radius:12px; border:1px solid #a5d6a7; margin-bottom:20px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
             <h3 style="font-size:1.1rem; color:var(--primary-color);">👤 Perfil de <span id="lblPerfilAlias"></span></h3>
@@ -440,7 +460,7 @@
           <div id="statusPerfilMessage" style="margin-top:10px; font-size:0.85rem; text-align:center; display:none; padding:8px; border-radius:6px;"></div>
         </div>
 
-        <!-- C) BOTÓN Y FORMULARIO DE NUEVO SOCIO -->
+        <!-- C) FORMULARIO DE ALTA -->
         <div id="contenedorBotonAlta" style="text-align:center; margin-bottom:15px;">
           <p style="font-size:0.9rem; color:#555; margin-bottom:8px;">¿Aún no te has dado de alta en el club?</p>
           <button type="button" onclick="mostrarFormularioAlta()" id="btnDesplegarAlta" class="btn-submit" style="background:var(--primary-color);">
@@ -448,7 +468,6 @@
           </button>
         </div>
 
-        <!-- FORMULARIO DE ALTA EXTENDIDO -->
         <form id="formAltaSocio" style="display: none; background:#f4f9f4; padding:15px; border-radius:12px; border:1px solid #c8e6c9; margin-top:15px;">
           <h3 style="font-size:1.1rem; color:var(--primary-color); margin-bottom:12px;">Formulario de Registro</h3>
           
@@ -594,15 +613,29 @@
         </div>
       </div>
 
-      <!-- SECCIÓN 5: CARRERAS DE LA ZONA -->
+      <!-- SECCIÓN 5: CARRERAS Y SALIDAS DE CLUB (CON CABECERA Y BOTÓN DE CALENDARIO) -->
       <div id="pantallaCarreras" style="display: none;">
-        <button class="btn-volver" onclick="volverAlMenu()">← Volver al Menú</button>
+        
+        <!-- CABECERA CON NAVEGACIÓN Y BOTÓN VER CALENDARIO AL OTRO LADO -->
+        <div class="top-nav-bar">
+          <button class="btn-volver" onclick="volverAlMenu()">← Volver al Menú</button>
+          <button class="btn-volver" onclick="toggleVistaCalendario()" id="btnToggleCalendario">📅 Ver Calendario</button>
+        </div>
+
+        <!-- BLOQUE DEL CALENDARIO DE 4 FINES DE SEMANA (INICIALMENTE OCULTO) -->
+        <div id="bloqueCalendarioFinesSemana" style="display: none; background: #f0f7f0; padding: 15px; border-radius: 12px; border: 1px solid #a5d6a7; margin-bottom: 20px;">
+          <h3 style="font-size: 1.05rem; color: var(--primary-color); margin-bottom: 6px;">📅 Próximos 4 Fines de Semana</h3>
+          <p style="font-size: 0.8rem; color: #666; margin-bottom: 12px;">Consulta las salidas y carreras programadas para los sábados y domingos de las próximas semanas:</p>
+          <div id="contenedorFinesSemana"></div>
+        </div>
+
+        <!-- LISTADO PRINCIPAL DE CARRERAS -->
         <div id="contenedorCarreras">
-          <p style="text-align: center; color: #666;">⏳ Cargando carreras de la zona...</p>
+          <p style="text-align: center; color: #666;">⏳ Cargando carreras y salidas del club...</p>
         </div>
       </div>
 
-      <!-- SECCIÓN 5.1: DETALLE DE CARRERA E INSCRIPCIÓN -->
+      <!-- SECCIÓN 5.1: DETALLE DE CARRERA -->
       <div id="pantallaDetalleCarrera" style="display: none;">
         <button class="btn-volver" onclick="volverACarreras()">← Volver a Carreras</button>
         <div style="background:#f9f9f9; padding:18px; border-radius:12px; border-left:5px solid var(--primary-color);">
@@ -618,7 +651,7 @@
           </div>
 
           <div style="background:#e8f5e9; padding:12px; border-radius:8px; border:1px solid #c8e6c9;">
-            <label for="selectSocioCarrera" style="font-size:0.85rem; font-weight:bold; color:#2e7d32; margin-bottom:5px;">¿Vas a ir a esta carrera? ¡Apúntate!</label>
+            <label for="selectSocioCarrera" style="font-size:0.85rem; font-weight:bold; color:#2e7d32; margin-bottom:5px;">¿Vas a ir a esta carrera/salida? ¡Apúntate!</label>
             <select id="selectSocioCarrera" style="width:100%; padding:10px; border-radius:6px; border:1px solid #a5d6a7; margin-bottom:10px;">
               <option value="">-- Cargar lista de socios --</option>
             </select>
@@ -627,6 +660,20 @@
             </button>
             <div id="statusInscripcionCarrera" style="margin-top:10px; text-align:center; font-size:0.85rem; display:none; padding:8px; border-radius:6px;"></div>
           </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 6: EL RESCAT 100 DONZELLES -->
+      <div id="pantallaRescat" style="display: none;">
+        <button class="btn-volver" onclick="volverAlMenu()">← Volver al Menú</button>
+        <div class="banner-challenge" style="background: linear-gradient(135deg, #6b1d2f, #2b2b2b); border-left: 5px solid #d4af37;">
+          <h2 style="color: #d4af37; font-size: 1.4rem; margin-bottom: 8px;">📜 El Rescat de les 100 Donzelles</h2>
+          <p style="margin-bottom: 15px; font-size: 0.9rem; color: #fdfbf7; line-height: 1.5;">
+            Travesía histórica e interurbana de <strong>211 km en 11 etapas</strong> conectando Bagà con la Torre d'en Dolça en Vila-seca.
+          </p>
+          <button onclick="window.location.href='https://gg197511.github.io/el-rescat/'" class="btn-submit" style="background:#d4af37; color:#6b1d2f; font-weight:bold;">
+            Abrir Web El Rescat 🚀
+          </button>
         </div>
       </div>
 
@@ -646,6 +693,7 @@
       document.getElementById('pantallaHistoria').style.display = 'none';
       document.getElementById('pantallaCarreras').style.display = 'none';
       document.getElementById('pantallaDetalleCarrera').style.display = 'none';
+      document.getElementById('pantallaRescat').style.display = 'none';
 
       if (seccion === 'noticias') {
         document.getElementById('pantallaNoticias').style.display = 'block';
@@ -661,7 +709,11 @@
         cargarHistoria();
       } else if (seccion === 'carreras') {
         document.getElementById('pantallaCarreras').style.display = 'block';
+        document.getElementById('bloqueCalendarioFinesSemana').style.display = 'none';
+        document.getElementById('btnToggleCalendario').innerText = '📅 Ver Calendario';
         cargarCarreras();
+      } else if (seccion === 'rescat') {
+        document.getElementById('pantallaRescat').style.display = 'block';
       }
     }
 
@@ -673,6 +725,7 @@
       document.getElementById('pantallaHistoria').style.display = 'none';
       document.getElementById('pantallaCarreras').style.display = 'none';
       document.getElementById('pantallaDetalleCarrera').style.display = 'none';
+      document.getElementById('pantallaRescat').style.display = 'none';
 
       document.getElementById('pantallaMenuGrid').style.display = 'grid';
     }
@@ -719,43 +772,39 @@
       }
     }
 
-    // FUNCIÓN AUXILIAR: Convierte cualquier fecha a formato HTML5 (AAAA-MM-DD)
-    // Función blindada mediante Expresiones Regulares para aislar solo AAAA-MM-DD
-	function formatearFechaISO(fechaRaw) {
- 	 if (!fechaRaw) return "";
- 	 let str = fechaRaw.toString().trim();
+    // FUNCIÓN AUXILIAR: Normalizar fechas a ISO (AAAA-MM-DD)
+    function formatearFechaISO(fechaRaw) {
+      if (!fechaRaw) return "";
+      let str = fechaRaw.toString().trim();
 
- 	 // 1. Si viene en formato español DD/MM/AAAA (ej. "20/05/1985" o "20/05/1985 00:00:00")
- 	 let matchEs = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
- 	 if (matchEs) {
- 	   let dia = matchEs[1].padStart(2, '0');
- 	   let mes = matchEs[2].padStart(2, '0');
-  	  let ano = matchEs[3];
- 	   return `${ano}-${mes}-${dia}`;
-	  }
+      let matchEs = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+      if (matchEs) {
+        let dia = matchEs[1].padStart(2, '0');
+        let mes = matchEs[2].padStart(2, '0');
+        let ano = matchEs[3];
+        return `${ano}-${mes}-${dia}`;
+      }
 
-	  // 2. Si viene en formato ISO AAAA-MM-DD (ej. "1985-05-20" o "1985-05-20T00:00:00.000Z")
-	  let matchIso = str.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
- 	 if (matchIso) {
-  	  let ano = matchIso[1];
- 	   let mes = matchIso[2].padStart(2, '0');
- 	   let dia = matchIso[3].padStart(2, '0');
-  	  return `${ano}-${mes}-${dia}`;
-  	}
+      let matchIso = str.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+      if (matchIso) {
+        let ano = matchIso[1];
+        let mes = matchIso[2].padStart(2, '0');
+        let dia = matchIso[3].padStart(2, '0');
+        return `${ano}-${mes}-${dia}`;
+      }
 
- 	 // 3. Objeto Date en texto amplio ("Mon May 20 1985...")
- 	 let d = new Date(str);
-	  if (!isNaN(d.getTime())) {
- 	   let ano = d.getFullYear();
- 	   let mes = String(d.getMonth() + 1).padStart(2, '0');
-  	  let dia = String(d.getDate()).padStart(2, '0');
-  	  return `${ano}-${mes}-${dia}`;
- 	 }
+      let d = new Date(str);
+      if (!isNaN(d.getTime())) {
+        let ano = d.getFullYear();
+        let mes = String(d.getMonth() + 1).padStart(2, '0');
+        let dia = String(d.getDate()).padStart(2, '0');
+        return `${ano}-${mes}-${dia}`;
+      }
 
- 	 return "";
-	}
+      return "";
+    }
 
-    // 1. INICIAR SESIÓN Y CARGAR PERFIL COMPLETO (24 CAMPOS)
+    // 1. INICIAR SESIÓN Y CARGAR PERFIL COMPLETO
     async function iniciarSesionSocio() {
       const alias = document.getElementById('loginAlias').value.trim();
       const tel = document.getElementById('loginTel').value.trim();
@@ -792,7 +841,6 @@
           document.getElementById('editCP').value = s.cp || "";
           document.getElementById('editPoblacion').value = s.poblacion || "";
           
-          // APLICAMOS LA NORMALIZACIÓN DE FECHA ISO
           document.getElementById('editFechaNac').value = formatearFechaISO(s.fechaNacimiento);
           
           document.getElementById('editAlergias').value = s.alergias || "";
@@ -1002,6 +1050,95 @@
       }
     }
 
+    // CALENDARIO: ALTERNAR VISIBILIDAD DE LOS PRÓXIMOS 4 FINES DE SEMANA
+    function toggleVistaCalendario() {
+      const bloque = document.getElementById('bloqueCalendarioFinesSemana');
+      const btn = document.getElementById('btnToggleCalendario');
+
+      if (bloque.style.display === 'none' || bloque.style.display === '') {
+        bloque.style.display = 'block';
+        btn.innerText = '📋 Ocultar Calendario';
+        renderizarCalendarioProximosWeekends();
+      } else {
+        bloque.style.display = 'none';
+        btn.innerText = '📅 Ver Calendario';
+      }
+    }
+
+    // CALENDARIO: ALGORITMO CÁLCULO DE LOS PRÓXIMOS 4 FINES DE SEMANA
+    function obtenerProximosFinesDeSemana() {
+      let finesDeSemana = [];
+      let hoy = new Date();
+      
+      // Buscar el próximo Sábado (o el de hoy si es Sábado)
+      let fecha = new Date(hoy);
+      let diaSemana = fecha.getDay(); // 0: Domingo, 6: Sábado
+      let diasHastaSabado = (6 - diaSemana + 7) % 7;
+      fecha.setDate(fecha.getDate() + diasHastaSabado);
+
+      for (let i = 0; i < 4; i++) {
+        let sabado = new Date(fecha);
+        let domingo = new Date(fecha);
+        domingo.setDate(sabado.getDate() + 1);
+
+        finesDeSemana.push({ sabado, domingo });
+
+        // Saltar 7 días hacia el siguiente sábado
+        fecha.setDate(fecha.getDate() + 7);
+      }
+      return finesDeSemana;
+    }
+
+    // CALENDARIO: RENDERIZAR COINCIDENCIAS DE EVENTOS EN LOS FINES DE SEMANA
+    function renderizarCalendarioProximosWeekends() {
+      const contenedor = document.getElementById('contenedorFinesSemana');
+      const fines = obtenerProximosFinesDeSemana();
+      contenedor.innerHTML = '';
+
+      fines.forEach((f, index) => {
+        const opciones = { day: 'numeric', month: 'short' };
+        const sabStr = f.sabado.toLocaleDateString('es-ES', opciones);
+        const domStr = f.domingo.toLocaleDateString('es-ES', opciones);
+
+        const sabISO = formatearFechaISO(f.sabado);
+        const domISO = formatearFechaISO(f.domingo);
+
+        // Filtrar carreras guardadas que coincidan con el Sábado o el Domingo
+        const eventosEncontrados = carrerasGuardadas.filter(c => {
+          const fechaEvISO = formatearFechaISO(c.fecha);
+          return fechaEvISO === sabISO || fechaEvISO === domISO;
+        });
+
+        const cardFinde = document.createElement('div');
+        cardFinde.style.cssText = "background:#ffffff; border:1px solid #c8e6c9; border-radius:8px; padding:10px 12px; margin-bottom:10px; box-shadow:0 2px 4px rgba(0,0,0,0.03);";
+
+        let htmlEventos = '';
+        if (eventosEncontrados.length > 0) {
+          eventosEncontrados.forEach(ev => {
+            htmlEventos += `
+              <div style="margin-top:6px; padding:8px; background:#e8f5e9; border-left:3px solid var(--primary-color); border-radius:6px; font-size:0.85rem;">
+                <div style="font-weight:bold; color:var(--dark-color);">🏃 ${ev.nombre}</div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:3px; color:#555;">
+                  <span>📅 ${ev.fecha}</span>
+                  <span style="color:#d32f2f; font-weight:bold;">👥 ${ev.totalInscritos || 0} inscritos</span>
+                </div>
+              </div>
+            `;
+          });
+        } else {
+          htmlEventos = `<p style="font-size:0.8rem; color:#888; margin-top:4px; italic">Sin salidas ni carreras programadas.</p>`;
+        }
+
+        cardFinde.innerHTML = `
+          <div style="font-weight:bold; font-size:0.88rem; color:var(--primary-color); border-bottom:1px solid #eee; padding-bottom:4px;">
+            Finde ${index + 1}: ${sabStr} - ${domStr}
+          </div>
+          ${htmlEventos}
+        `;
+        contenedor.appendChild(cardFinde);
+      });
+    }
+
     async function verDetalleCarrera(index) {
       const carrera = carrerasGuardadas[index];
       if (!carrera) return;
@@ -1121,7 +1258,7 @@
       document.getElementById('pantallaCarreras').style.display = 'block';
     }
 
-    // REGISTRO DE NUEVO SOCIO (24 CAMPOS)
+    // REGISTRO DE NUEVO SOCIO
     document.getElementById('formAltaSocio').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('btnAlta');
